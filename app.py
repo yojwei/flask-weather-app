@@ -1,8 +1,7 @@
-from flask import Flask
+"""Flask Weather App Entry Point"""
 
-app = Flask(__name__)
+from flask_weather import create_app
 
-
-@app.route("/")
-def hello():
-    return "Hello, World!"
+if __name__ == "__main__":
+    app = create_app()
+    app.run(debug=True)
