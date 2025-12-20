@@ -25,3 +25,8 @@ def register_routes(app):
         """Weather API endpoint with query parameter"""
         city = request.args.get("city", "未指定")
         return {"status": "ok", "city": city, "message": f"{city} 的天氣資訊"}
+
+    @app.route("/api/weather/<city>", methods=["GET"])
+    def weather_api(city):
+        """Weather API endpoint"""
+        return {"status": "ok", "city": city, "message": f"{city} 的天氣資訊"}

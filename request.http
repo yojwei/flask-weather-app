@@ -3,6 +3,9 @@
 ### GET 搜尋（無參數）
 GET http://127.0.0.1:5000/search
 
+### GET 天氣 API（指定城市）
+GET http://127.0.0.1:5000/api/weather/taipei
+
 ### GET 天氣 API（帶查詢參數）
 GET http://127.0.0.1:5000/weather?city=Taichung
 
