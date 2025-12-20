@@ -3,6 +3,9 @@
 ### GET 搜尋（無參數）
 GET http://127.0.0.1:5000/search
 
+### GET 天氣 API（帶查詢參數）
+GET http://127.0.0.1:5000/weather?city=Taichung
+
 ### POST 搜尋（帶城市參數）
 POST http://127.0.0.1:5000/search HTTP/1.1
 Content-Type: application/x-www-form-urlencoded

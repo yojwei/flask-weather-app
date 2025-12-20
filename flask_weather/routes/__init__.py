@@ -19,3 +19,9 @@ def register_routes(app):
             return f"您正在搜尋：{city}"
         # GET 請求則顯示搜尋頁面
         return "請輸入城市名稱進行搜尋"
+
+    @app.route("/weather", methods=["GET"])
+    def get_weather():
+        """Weather API endpoint with query parameter"""
+        city = request.args.get("city", "未指定")
+        return {"status": "ok", "city": city, "message": f"{city} 的天氣資訊"}
