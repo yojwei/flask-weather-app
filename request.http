@@ -14,3 +14,6 @@ POST http://127.0.0.1:5000/search HTTP/1.1
 Content-Type: application/x-www-form-urlencoded
 
 city=Taipei
+
+### GET 404 錯誤測試
+GET http://127.0.0.1:5000/hi

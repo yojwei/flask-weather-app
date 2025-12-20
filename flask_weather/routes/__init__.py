@@ -30,3 +30,8 @@ def register_routes(app):
     def weather_api(city):
         """Weather API endpoint"""
         return {"status": "ok", "city": city, "message": f"{city} 的天氣資訊"}
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        # 返回自定義內容與 404 狀態碼
+        return "<h1>404 - 找不到頁面</h1><p>請檢查您的網址是否正確。</p>", 404
