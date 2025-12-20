@@ -1,6 +1,6 @@
 """Routes module for Flask Weather App"""
 
-from flask import render_template
+from flask import request
 
 
 def register_routes(app):
@@ -11,7 +11,11 @@ def register_routes(app):
         """Home page"""
         return "這是首頁"
 
-    @app.route("/search")
-    def search_page():
-        """Search page"""
-        return "這是搜尋頁面"
+    @app.route("/search", methods=["GET", "POST"])
+    def search():
+        if request.method == "POST":
+            # 處理表單提交
+            city = request.form.get("city")
+            return f"您正在搜尋：{city}"
+        # GET 請求則顯示搜尋頁面
+        return "請輸入城市名稱進行搜尋"
