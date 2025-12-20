@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_weather.config import get_config
-from flask_weather.routes import main_bp
+from flask_weather.routes import register_routes
 
 
 def create_app():
@@ -11,7 +11,7 @@ def create_app():
     config = get_config()
     app.config.from_object(config)
 
-    # Register blueprints
-    app.register_blueprint(main_bp)
+    # Register routes
+    register_routes(app)
 
     return app

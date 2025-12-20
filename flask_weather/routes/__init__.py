@@ -1,17 +1,17 @@
 """Routes module for Flask Weather App"""
 
-from flask import Blueprint, render_template
-
-main_bp = Blueprint("main", __name__)
+from flask import render_template
 
 
-@main_bp.route("/")
-def index():
-    """Home page"""
-    return render_template("base.html", title="天氣應用")
+def register_routes(app):
+    """Register routes with the Flask app"""
 
+    @app.route("/")
+    def index():
+        """Home page"""
+        return "這是首頁"
 
-@main_bp.route("/api/weather")
-def get_weather():
-    """Get weather data (API endpoint)"""
-    return {"status": "ok", "message": "天氣 API 端點"}
+    @app.route("/search")
+    def search_page():
+        """Search page"""
+        return "這是搜尋頁面"
