@@ -5,16 +5,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Flask 天氣應用{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入 Alpine.js (用於互動功能) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {% block styles %}{% endblock %}
 </head>
 
 <body>
-    <nav>
-        <h1><a href="/">Flask 天氣應用</a></h1>
-    </nav>
-    <main>
-        {% block content %}{% endblock %}
-    </main>
+
+    <body class="bg-gray-100 text-gray-800">
+        <!-- 導航列 -->
+        <nav class="bg-blue-600 text-white shadow-md mb-8">
+            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+                <a class="text-xl font-bold" href="{{ url_for('main.index') }}">Weather App</a>
+            </div>
+        </nav>
+
+        <!-- 主要內容區塊 -->
+        <div class="container mx-auto px-4">
+            {% block content %}{% endblock %}
+        </div>
+
+        {% block scripts %}{% endblock %}
+    </body>
 </body>
 
 </html>
