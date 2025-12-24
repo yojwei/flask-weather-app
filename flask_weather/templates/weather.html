@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}{{ city }}天氣資訊 - Weather App{% endblock %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full max-w-md">
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+            <div class="bg-blue-500 text-white p-4">
+                <h2 class="text-2xl font-bold mb-0">{{ city }}</h2>
+            </div>
+            <div class="p-6">
+                <div class="flex flex-wrap text-center">
+                    <div class="w-1/2 mb-4">
+                        <h3 class="text-5xl font-bold text-gray-800">25°C</h3>
+                        <p class="text-gray-500">多雲</p>
+                    </div>
+                    <div class="w-1/2 flex flex-col justify-center text-sm text-gray-600">
+                        <p class="mb-1"><strong class="font-semibold">濕度:</strong> 60%</p>
+                        <p class="mb-1"><strong class="font-semibold">風速:</strong> 3.5 m/s</p>
+                        <p class="mb-0"><strong class="font-semibold">體感:</strong> 27°C</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-gray-50 p-3 text-right text-xs text-gray-500 border-t border-gray-200">
+                更新時間: 2023-10-27 10:00
+            </div>
+        </div>
+
+        <div class="mt-4 text-center">
+            <a href="{{ url_for('main.index') }}"
+                class="inline-block border border-gray-300 text-gray-700 hover:bg-gray-100 font-semibold py-2 px-4 rounded">返回首頁</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
