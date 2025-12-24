@@ -5,10 +5,18 @@
 {% block content %}
 <div class="text-center py-12">
     <h1 class="text-4xl font-bold mb-4">歡迎來到 Weather App</h1>
-    <p class="text-xl text-gray-600 mb-8">查詢全球城市天氣，掌握最新氣象資訊。</p>
-    <a href="{{ url_for('weather.search') }}"
-        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300">
-        開始查詢
-    </a>
+    <p class="text-xl text-gray-600 mb-8">即時掌握全球天氣動態，為您的出行做好準備。</p>
+
+
+    <!-- 搜尋框入口 -->
+    <div class="bg-white shadow-md rounded-lg p-6 mb-8">
+        <form action="{{ url_for('weather.search') }}" method="POST" class="flex gap-2">
+            <input type="text" name="city"
+                class="flex-grow shadow appearance-none border rounded py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                placeholder="輸入城市名稱 (例如: Taipei)">
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline">搜尋</button>
+        </form>
+    </div>
 </div>
 {% endblock %}
