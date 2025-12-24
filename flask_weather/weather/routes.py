@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, render_template
 from . import weather_bp
 
 
@@ -7,8 +7,8 @@ def search():
     """天氣搜尋"""
     if request.method == "POST":
         city = request.form.get("city")
-        return f"您正在搜尋：{city}"
-    return "請輸入城市名稱進行搜尋"
+        return render_template("weather.html", city=city)
+    return render_template("index.html")
 
 
 @weather_bp.route("", methods=["GET"])
