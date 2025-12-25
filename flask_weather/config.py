@@ -12,6 +12,9 @@ class Config:
     DEBUG = False
     TESTING = False
 
+    # CSRF settings
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-scret-key"
+
 
 class DevelopmentConfig(Config):
     """Development configuration"""
