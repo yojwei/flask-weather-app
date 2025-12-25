@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}首頁 - Weather App{% endblock %}
+{% block title %}Flask 天氣應用 - 首頁{% endblock %}
 
 {% block content %}
 <div class="text-center py-12">
@@ -11,11 +11,21 @@
     <!-- 搜尋框入口 -->
     <div class="bg-white shadow-md rounded-lg p-6 mb-8">
         <form action="{{ url_for('weather.search') }}" method="POST" class="flex gap-2">
-            <input type="text" name="city"
-                class="flex-grow shadow appearance-none border rounded py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                placeholder="輸入城市名稱 (例如: Taipei)">
-            <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline">搜尋</button>
+            <!-- CSRF Token (必須！) -->
+            {{ form.hidden_tag() }}
+
+            <div class="flex-grow">
+                <!-- 渲染輸入欄位，並加入 Tailwind 類別 -->
+                {{ form.city(class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight
+                focus:outline-none focus:shadow-outline", placeholder="輸入城市名稱") }}
+
+                <!-- 顯示驗證錯誤 -->
+                {% for error in form.city.errors %}
+                <div class="text-red-500 text-left mt-1 text-sm">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded
+            focus:outline-none focus:shadow-outline cursor-pointer") }}
         </form>
     </div>
 </div>

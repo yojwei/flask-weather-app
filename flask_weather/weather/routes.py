@@ -1,14 +1,19 @@
-from flask import request, render_template
+from flask import request, render_template, flash
 from . import weather_bp
+from .forms import SearchForm
 
 
 @weather_bp.route("/search", methods=["GET", "POST"])
 def search():
     """天氣搜尋"""
-    if request.method == "POST":
-        city = request.form.get("city")
+    form = SearchForm()
+
+    if form.validate_on_submit():
+        city = form.city.data
+        flash(f"正在查詢 {city} 的天氣...", "info")
         return render_template("weather.html", city=city)
-    return render_template("index.html")
+
+    return render_template("index.html", form=form)
 
 
 @weather_bp.route("", methods=["GET"])
