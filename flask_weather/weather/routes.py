@@ -14,7 +14,7 @@ def search():
         city = form.city.data
         api_key = current_app.config.get("OPENWEATHER_API_KEY")
 
-        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=zh_tw"
+        url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=zh_tw"
         response = requests.get(url)
 
         if response.status_code == 200:
