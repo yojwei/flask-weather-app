@@ -9,4 +9,10 @@ dependencies = [
     "flask>=3.1.2",
     "flask-wtf>=1.2.2",
     "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
 ]
