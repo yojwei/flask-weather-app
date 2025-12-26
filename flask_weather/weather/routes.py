@@ -1,4 +1,5 @@
-from flask import request, render_template, flash
+import requests
+from flask import request, render_template, flash, current_app
 from . import weather_bp
 from .forms import SearchForm
 
@@ -7,11 +8,20 @@ from .forms import SearchForm
 def search():
     """天氣搜尋"""
     form = SearchForm()
+    weather_data = None
 
     if form.validate_on_submit():
         city = form.city.data
-        flash(f"正在查詢 {city} 的天氣...", "info")
-        return render_template("weather.html", city=city)
+        api_key = current_app.config.get("OPENWEATHER_API_KEY")
+
+        url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=zh_tw"
+        response = requests.get(url)
+
+        if response.status_code == 200:
+            weather_data = response.json()
+            return render_template("weather.html", city=city, data=weather_data)
+
+        flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
 
     return render_template("index.html", form=form)
 
