@@ -17,19 +17,6 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(weather_bp, url_prefix="/weather")
 
-    @app.template_filter("datetimeformat")
-    def datetimeformat(value, format="%Y-%m-%d %H:%M:%S"):
-        from datetime import datetime
-
-        if not value:
-            return ""
-        try:
-            # 確保 value 是數字
-            value = float(value) if isinstance(value, str) else value
-            return datetime.fromtimestamp(value).strftime(format)
-        except (ValueError, TypeError, OSError) as e:
-            return f"<無效時間戳: {value}>"
-
     # 錯誤處理
     @app.errorhandler(404)
     def page_not_found(e):
