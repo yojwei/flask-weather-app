@@ -12,25 +12,25 @@
             <div class="p-6">
                 <div class="flex flex-wrap items-center">
                     <div class="w-1/2 mb-4 flex flex-col items-center justify-center border-r border-gray-200">
-                        <img src="http://openweathermap.org/img/wn/{{ data.weather[0].icon }}@2x.png"
-                            alt="{{ data.weather[0].description }}" class="w-24 h-24 -my-4">
-                        <h3 class="text-5xl font-bold text-gray-800">{{ data.main.temp | round(1) }}°C</h3>
-                        <p class="text-gray-600 text-lg font-medium mt-2">{{ data.weather[0].description }}</p>
+                        <img src="http://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}"
+                            class="w-24 h-24 -my-4">
+                        <h3 class="text-5xl font-bold text-gray-800">{{ data.temp }}°C</h3>
+                        <p class="text-gray-600 text-lg font-medium mt-2">{{ data.description }}</p>
                     </div>
                     <div class="w-1/2 flex flex-col justify-center items-start pl-8 text-lg text-gray-600 space-y-2">
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">濕度:</strong> {{ data.main.humidity
+                        <p class="mb-0"><strong class="font-semibold text-gray-800">濕度:</strong> {{ data.humidity
                             }}%</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">風速:</strong> {{ data.wind.speed }}
+                        <p class="mb-0"><strong class="font-semibold text-gray-800">風速:</strong> {{ data.wind_speed }}
                             m/s</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">體感:</strong> {{ data.main.feels_like
-                            | round(1) }} °C</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">氣壓:</strong> {{ data.main.pressure
-                            }} hPa</p>
+                        <p class="mb-0"><strong class="font-semibold text-gray-800">體感:</strong> {{ data.feels_like }}
+                            °C</p>
+                        <p class="mb-0"><strong class="font-semibold text-gray-800">氣壓:</strong> {{ data.pressure }} hPa
+                        </p>
                     </div>
                 </div>
             </div>
             <div class="bg-gray-50 p-3 text-right text-xs text-gray-500 border-t border-gray-200">
-                更新時間: {{ data.dt | datetimeformat }}
+                更新時間: {{ data.dt }}
             </div>
         </div>
 
