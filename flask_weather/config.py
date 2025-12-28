@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
@@ -17,6 +18,11 @@ class Config:
 
     # OpenWeatherMap API settings
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
+
+    # SQLite settings
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL"
+    ) or "sqlite:///" + os.path.join(basedir, "app.db")
 
 
 class DevelopmentConfig(Config):

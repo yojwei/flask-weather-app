@@ -1,5 +1,8 @@
 from flask import Flask
 from flask_weather.config import get_config
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
 
 
 def create_app():
@@ -9,6 +12,9 @@ def create_app():
     # Load configuration
     config = get_config()
     app.config.from_object(config)
+
+    # Initial db
+    db.init_app(app)
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp
