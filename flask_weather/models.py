@@ -14,8 +14,12 @@ class User(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     # 關聯關係
-    saved_cities = db.relationship("SavedCity", backref="user", lazy="dynamic", cascade="all, delete-orphan")
-    search_histories = db.relationship("SearchHistory", backref="user", lazy="dynamic", cascade="all, delete-orphan")
+    saved_cities = db.relationship(
+        "SavedCity", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+    )
+    search_histories = db.relationship(
+        "SearchHistory", backref="user", lazy="dynamic", cascade="all, delete-orphan"
+    )
 
     def __repr__(self):
         return f"<User {self.username}>"
