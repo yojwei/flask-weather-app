@@ -1,8 +1,10 @@
 from flask import Flask
 from flask_weather.config import get_config
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 db = SQLAlchemy()
+migrate = Migrate()
 
 
 def create_app():
@@ -15,6 +17,13 @@ def create_app():
 
     # Initial db
     db.init_app(app)
+
+    # Initialize migration
+    migrate.init_app(app, db)
+
+    # 重要：確保 models 被導入，Flask-Migrate 才能偵測到資料表變化
+    with app.app_context():
+        from flask_weather import models
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp
