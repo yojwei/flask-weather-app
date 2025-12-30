@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}Flask 天氣應用 - 註冊帳號{% endblock %}
+
+{% set input_class = "block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1
+outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600
+sm:text-sm/6" %}
+
+{% block content %}
+<div class="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-sm">
+        <h2 class="mt-10 text-center text-2xl/9 font-bold tracking-tight">註冊帳號</h2>
+    </div>
+
+    <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <form method="POST" action="" class="space-y-6">
+            {{ form.hidden_tag() }}
+
+            <!-- 帳戶名稱 -->
+            <div>
+                {{ form.username.label(class="block text-sm/6 font-medium") }}
+                <div class="mt-2">
+                    {{ form.username(class=input_class) }}
+                </div>
+                {% for error in form.username.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- 電子郵件 -->
+            <div>
+                {{ form.email.label(class="block text-sm/6 font-medium") }}
+                <div class="mt-2">
+                    {{ form.email(class=input_class) }}
+                </div>
+                {% for error in form.email.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- 密碼 -->
+            <div>
+                {{ form.password.label(class="block text-sm/6 font-medium") }}
+                <div class="mt-2">
+                    {{ form.password(class=input_class) }}
+                </div>
+                {% for error in form.password.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- 確認密碼 -->
+            <div>
+                {{ form.confirm_password.label(class="block text-sm/6 font-medium") }}
+                <div class="mt-2">
+                    {{ form.confirm_password(class=input_class) }}
+                </div>
+                {% for error in form.confirm_password.errors %}
+                <div class="text-red-500 text-sm mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- 提交按鈕 -->
+            <div>
+                {{ form.submit(class="flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm/6
+                font-semibold text-white hover:bg-blue-700 focus-visible:outline-2 focus-visible:outline-offset-2
+                focus-visible:outline-blue-600 cursor-pointer") }}
+            </div>
+        </form>
+
+        <p class="mt-10 text-center text-sm/6">
+            已有帳號?
+            <a href="{{ url_for('auth.login') }}" class="font-semibold text-blue-600 hover:text-blue-700">登入</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
