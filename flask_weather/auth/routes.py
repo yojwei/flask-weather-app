@@ -4,6 +4,7 @@
 處理使用者註冊、登入和登出的相關路由和邏輯。
 """
 
+from functools import wraps
 from flask import render_template, redirect, url_for, flash, request
 from flask_weather import db
 from flask_weather.auth import auth_bp
@@ -12,7 +13,24 @@ from flask_weather.models import User
 from flask_login import current_user, login_user, logout_user, login_required
 
 
+def redirect_if_authenticated(f):
+    """
+    裝飾器：若使用者已登入，重導向到首頁
+
+    應用於登入和註冊路由，防止已登入使用者重複登入。
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if current_user.is_authenticated:
+            return redirect(url_for("main.index"))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
 @auth_bp.route("/register", methods=["GET", "POST"])
+@redirect_if_authenticated
 def register():
     """
     使用者註冊頁面
@@ -37,6 +55,7 @@ def register():
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@redirect_if_authenticated
 def login():
     """
     使用者登入頁面
@@ -44,10 +63,6 @@ def login():
     GET: 返回登入表單頁面
     POST: 驗證使用者憑證並登入
     """
-    # 若使用者已登入，重導向到首頁
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-
     form = LoginForm()
     if form.validate_on_submit():
         # 根據使用者名稱查詢使用者
