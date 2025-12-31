@@ -2,9 +2,13 @@ from flask import Flask
 from flask_weather.config import get_config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_login import LoginManager
 
 db = SQLAlchemy()
 migrate = Migrate()
+login = LoginManager()
+login.login_view = "auth.login"
+login.login_message = "請先登入以存取此頁面。"
 
 
 def create_app():
@@ -24,6 +28,9 @@ def create_app():
     # 重要：確保 models 被導入，Flask-Migrate 才能偵測到資料表變化
     with app.app_context():
         from flask_weather import models
+
+    # 初始化登入管理
+    login.init_app(app)
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp
