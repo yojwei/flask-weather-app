@@ -1,9 +1,10 @@
 from datetime import datetime
-from flask_weather import db
+from flask_weather import db, login
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     """User model to store user information"""
 
     __tablename__ = "users"  # table name in the database
@@ -59,3 +60,9 @@ class SearchHistory(db.Model):
 
     def __repr__(self):
         return f"<SearchHistory {self.city_name} by {self.user.username}>"
+
+
+# User Loader for Flask-Login
+@login.user_loader
+def load_user(id):
+    return db.session.get(User, int(id))
