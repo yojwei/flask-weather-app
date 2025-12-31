@@ -21,6 +21,15 @@
         <nav class="bg-blue-600 text-white shadow-md mb-8">
             <div class="container mx-auto px-4 py-4 flex justify-between items-center">
                 <a class="text-xl font-bold" href="{{ url_for('main.index') }}">Weather App</a>
+                <div class="flex gap-4">
+                    {% if current_user.is_authenticated %}
+                    <span class="nav-item nav-link">Hi, {{ current_user.username }}</span>
+                    <a class="nav-item nav-link hover:text-blue-200" href="{{ url_for('auth.logout') }}">登出</a>
+                    {% else %}
+                    <a class="nav-item nav-link hover:text-blue-200" href="{{ url_for('auth.login') }}">登入</a>
+                    <a class="nav-item nav-link hover:text-blue-200" href="{{ url_for('auth.register') }}">註冊</a>
+                    {% endif %}
+                </div>
             </div>
         </nav>
 
