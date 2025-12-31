@@ -28,3 +28,10 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user:
             raise ValidationError("此 Email 已被註冊。")
+
+
+class LoginForm(FlaskForm):
+    username = StringField("使用者名稱", validators=[DataRequired()])
+    password = PasswordField("密碼", validators=[DataRequired()])
+    remember_me = StringField("記住我")
+    submit = SubmitField("登入")
