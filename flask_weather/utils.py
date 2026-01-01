@@ -3,8 +3,10 @@
 import requests
 from flask import current_app
 from datetime import datetime
+from flask_weather import cache
 
 
+@cache.memoize(timeout=600)  # 快取 10 分鐘
 def get_current_weather(city):
     """
     取得指定城市的當前天氣
@@ -17,6 +19,7 @@ def get_current_weather(city):
     params = {"q": city, "appid": api_key, "units": "metric", "lang": "zh_tw"}
 
     try:
+        print(f"正在呼叫 API 查詢 {city}...")
         response = requests.get(base_url, params=params, timeout=5)
         response.raise_for_status()  # 如果狀態碼不是 200，會拋出 HTTPError
         return response.json()

@@ -3,12 +3,14 @@ from flask_weather.config import get_config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_caching import Cache
 
 db = SQLAlchemy()
 migrate = Migrate()
 login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "請先登入以存取此頁面。"
+cache = Cache()
 
 
 def create_app():
@@ -31,6 +33,13 @@ def create_app():
 
     # 初始化登入管理
     login.init_app(app)
+
+    # 初始化快取
+    # 設定快取類型為 SimpleCache (開發用，存在記憶體中)
+    # 生產環境建議使用 RedisCache
+    app.config["CACHE_TYPE"] = "SimpleCache"
+    app.config["CACHE_DEFAULT_TIMEOUT"] = 300  # 預設快取 5 分鐘
+    cache.init_app(app)
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp
