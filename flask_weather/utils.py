@@ -56,5 +56,34 @@ def format_weather_data(data):
         "pressure": data["main"]["pressure"],
         "description": data["weather"][0]["description"],
         "icon": data["weather"][0]["icon"],
+        "condition": data["weather"][0]["main"],  # 例如 'Clouds', 'Rain'
         "dt": datetime.fromtimestamp(data["dt"]).strftime("%Y-%m-%d %H:%M"),
     }
+
+
+def get_weather_icon_class(icon_code):
+    """
+    將 OpenWeatherMap icon code 對應到 Remix Icon
+    參考: https://remixicon.com/
+    """
+    mapping = {
+        "01d": "ri-sun-fill text-yellow-500",  # 晴天 (日)
+        "01n": "ri-moon-fill text-gray-200",  # 晴天 (夜)
+        "02d": "ri-sun-cloudy-fill text-gray-500",  # 少雲 (日)
+        "02n": "ri-moon-cloudy-fill text-gray-400",  # 少雲 (夜)
+        "03d": "ri-cloudy-fill text-gray-500",  # 多雲
+        "03n": "ri-cloudy-fill text-gray-400",
+        "04d": "ri-cloudy-2-fill text-gray-600",  # 陰天
+        "04n": "ri-cloudy-2-fill text-gray-500",
+        "09d": "ri-showers-fill text-blue-400",  # 毛毛雨
+        "09n": "ri-showers-fill text-blue-300",
+        "10d": "ri-rain-fill text-blue-500",  # 雨天
+        "10n": "ri-rain-fill text-blue-400",
+        "11d": "ri-thunderstorms-fill text-purple-500",  # 雷雨
+        "11n": "ri-thunderstorms-fill text-purple-400",
+        "13d": "ri-snowy-fill text-blue-200",  # 雪
+        "13n": "ri-snowy-fill text-blue-100",
+        "50d": "ri-foggy-fill text-gray-400",  # 霧
+        "50n": "ri-foggy-fill text-gray-300",
+    }
+    return mapping.get(icon_code, "ri-question-fill text-gray-500")

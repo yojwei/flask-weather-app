@@ -2,30 +2,55 @@
 
 {% block title %}{{ city }}天氣資訊 - Weather App{% endblock %}
 
+{% set bg_class = 'bg-blue-500' %} {# 預設藍天 #}
+
+{% if '01' in data.icon %}
+{# 晴天：使用亮藍色天空背景，襯托黃色太陽 #}
+{% set bg_class = 'bg-blue-400' %}
+{% elif '02' in data.icon or '03' in data.icon or '04' in data.icon %}
+{# 多雲/陰天：使用灰藍色 #}
+{% set bg_class = 'bg-slate-500' %}
+{% elif '09' in data.icon or '10' in data.icon %}
+{# 雨天：深灰色背景，襯托藍色雨滴 #}
+{% set bg_class = 'bg-gray-700' %}
+{% elif '11' in data.icon %}
+{# 雷雨：深紫色或黑色 #}
+{% set bg_class = 'bg-indigo-900' %}
+{% endif %}
+
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full max-w-md">
-        <div class="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
+        <div class="shadow-lg rounded-lg overflow-hidden {{ bg_class }} text-white transition-colors duration-300">
             <div class="bg-blue-500 text-white p-4 text-center">
                 <h2 class="text-3xl font-bold mb-0">{{ city }}</h2>
             </div>
             <div class="p-6">
-                <div class="flex flex-wrap items-center">
-                    <div class="w-1/2 mb-4 flex flex-col items-center justify-center border-r border-gray-200">
-                        <img src="http://openweathermap.org/img/wn/{{ data.icon }}@2x.png" alt="{{ data.description }}"
-                            class="w-24 h-24 -my-4">
-                        <h3 class="text-5xl font-bold text-gray-800">{{ data.temp }}°C</h3>
-                        <p class="text-gray-600 text-lg font-medium mt-2">{{ data.description }}</p>
+                <div class="flex flex-wrap items-center text-center">
+                    <div class="w-full md:w-1/2 mb-6 md:mb-0">
+                        <!-- 使用 Filter 顯示圖示 -->
+                        <div class="text-8xl mb-2">
+                            <i class="{{ data.icon | weather_icon }}"></i>
+                        </div>
+                        <h2 class="text-6xl font-bold">{{ data.temp }}°C</h2>
+                        <p class="text-xl capitalize">{{ data.description }}</p>
                     </div>
-                    <div class="w-1/2 flex flex-col justify-center items-start pl-8 text-lg text-gray-600 space-y-2">
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">濕度:</strong> {{ data.humidity
-                            }}%</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">風速:</strong> {{ data.wind_speed }}
-                            m/s</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">體感:</strong> {{ data.feels_like }}
-                            °C</p>
-                        <p class="mb-0"><strong class="font-semibold text-gray-800">氣壓:</strong> {{ data.pressure }} hPa
-                        </p>
+
+                    <div class="w-full md:w-1/2">
+                        <ul class="divide-y divide-gray-200 text-left">
+                            <li class="py-3 flex justify-between items-center">
+                                <span><i class="ri-drop-fill text-blue-500 mr-2"></i>濕度</span>
+                                <span class="font-bold">{{ data.humidity }}%</span>
+                            </li>
+                            <li class="py-3 flex justify-between items-center">
+                                <span><i class="ri-windy-fill text-gray-500 mr-2"></i>風速</span>
+                                <span class="font-bold">{{ data.wind_speed }} m/s</span>
+                            </li>
+                            <li class="py-3 flex justify-between items-center">
+                                <span><i class="ri-temp-hot-fill text-red-500 mr-2"></i>體感溫度</span>
+                                <span class="font-bold">{{ data.feels_like }}°C</span>
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>

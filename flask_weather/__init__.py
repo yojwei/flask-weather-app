@@ -41,6 +41,11 @@ def create_app():
     app.config["CACHE_DEFAULT_TIMEOUT"] = 300  # 預設快取 5 分鐘
     cache.init_app(app)
 
+    # 自訂 Jinja2 過濾器 icon
+    from .utils import get_weather_icon_class
+
+    app.jinja_env.filters["weather_icon"] = get_weather_icon_class
+
     # 從子模組導入並註冊藍圖
     from .main import main_bp
     from .weather import weather_bp
