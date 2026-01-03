@@ -67,7 +67,8 @@
                         <div class="text-8xl mb-2">
                             <i class="{{ data.icon | weather_icon }}"></i>
                         </div>
-                        <h2 class="text-6xl font-bold">{{ data.temp }}°C</h2>
+                        <h2 class="text-6xl font-bold">{{ data.temp }}°{{ 'C' if session.get('units', 'metric') ==
+                            'metric' else 'F' }}</h2>
                         <p class="text-xl capitalize">{{ data.description }}</p>
                     </div>
 
@@ -83,7 +84,8 @@
                             </li>
                             <li class="py-3 flex justify-between items-center">
                                 <span><i class="ri-temp-hot-fill text-red-500 mr-2"></i>體感溫度</span>
-                                <span class="font-bold">{{ data.feels_like }}°C</span>
+                                <span class="font-bold">{{ data.feels_like }}°{{ 'C' if session.get('units', 'metric')
+                                    == 'metric' else 'F' }}</span>
                             </li>
                         </ul>
                     </div>
