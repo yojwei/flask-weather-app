@@ -2,30 +2,41 @@
 
 {% block title %}{{ city }}天氣資訊 - Weather App{% endblock %}
 
-{% set bg_class = 'bg-blue-500' %} {# 預設藍天 #}
+{# 將配色拆成 header 與 body，便於控制不同區塊色調與文字顏色 #}
+{% set header_class = 'bg-blue-500' %}
+{% set body_class = 'bg-slate-700' %}
+{% set body_text_class = 'text-white' %}
 
 {% if '01' in data.icon %}
-{# 晴天：使用亮藍色天空背景，襯托黃色太陽 #}
-{% set bg_class = 'bg-blue-400' %}
+{# 晴天：暖色 header，淺藍 body，使用深色文字以提高可讀性 #}
+{% set header_class = 'bg-yellow-400' %}
+{% set body_class = 'bg-blue-200' %}
+{% set body_text_class = 'text-slate-900' %}
 {% elif '02' in data.icon or '03' in data.icon or '04' in data.icon %}
-{# 多雲/陰天：使用灰藍色 #}
-{% set bg_class = 'bg-slate-500' %}
+{# 多雲/陰天：柔和灰藍 header，深灰藍 body #}
+{% set header_class = 'bg-slate-500' %}
+{% set body_class = 'bg-slate-600' %}
+{% set body_text_class = 'text-white' %}
 {% elif '09' in data.icon or '10' in data.icon %}
-{# 雨天：深灰色背景，襯托藍色雨滴 #}
-{% set bg_class = 'bg-gray-700' %}
+{# 雨天：深灰 header，深藍灰 body #}
+{% set header_class = 'bg-gray-700' %}
+{% set body_class = 'bg-gray-700' %}
+{% set body_text_class = 'text-white' %}
 {% elif '11' in data.icon %}
-{# 雷雨：深紫色或黑色 #}
-{% set bg_class = 'bg-indigo-900' %}
+{# 雷雨：深色系 header + body #}
+{% set header_class = 'bg-indigo-900' %}
+{% set body_class = 'bg-indigo-800' %}
+{% set body_text_class = 'text-white' %}
 {% endif %}
 
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full max-w-md">
-        <div class="shadow-lg rounded-lg overflow-hidden {{ bg_class }} text-white transition-colors duration-300">
-            <div class="bg-blue-500 text-white p-4 text-center">
+        <div class="shadow-lg rounded-lg overflow-hidden transition-colors duration-300">
+            <div class="{{ header_class }} text-white p-4 text-center">
                 <h2 class="text-3xl font-bold mb-0">{{ city }}</h2>
             </div>
-            <div class="p-6">
+            <div class="p-6 {{ body_class }} {{ body_text_class }}">
                 <div class="flex flex-wrap items-center text-center">
                     <div class="w-full md:w-1/2 mb-6 md:mb-0">
                         <!-- 使用 Filter 顯示圖示 -->
