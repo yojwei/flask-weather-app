@@ -1,9 +1,40 @@
 """Utility functions for Flask Weather App"""
 
 import requests
-from flask import current_app
+from flask import current_app, session
 from datetime import datetime
 from flask_weather import cache
+
+
+def _fetch_weather_data(params, timeout=5):
+    """
+    私有函式：統一處理 OpenWeather API 請求與錯誤處理，成功回傳 JSON，失敗回傳 None
+    """
+    base_url = "https://api.openweathermap.org/data/2.5/weather"
+
+    try:
+        current_app.logger.debug(f"呼叫 OpenWeather API：{params}")
+        response = requests.get(base_url, params=params, timeout=timeout)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.Timeout:
+        current_app.logger.warning("OpenWeather API 請求逾時")
+        return None
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code if e.response is not None else 0
+        if status_code == 404:
+            current_app.logger.warning(f"找不到城市或經緯度：{params}")
+        elif status_code == 401:
+            current_app.logger.error("OpenWeather API Key 無效")
+        else:
+            current_app.logger.error(f"HTTP 錯誤: {e}")
+        return None
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"連線錯誤: {e}")
+        return None
+    except ValueError as e:
+        current_app.logger.error(f"API 回傳資料格式錯誤: {e}")
+        return None
 
 
 @cache.memoize(timeout=600)  # 快取 10 分鐘
@@ -13,30 +44,11 @@ def get_current_weather(city):
     :param city: 城市名稱
     :return: 成功回傳天氣資料字典，失敗回傳 None
     """
-    api_key = current_app.config["OPENWEATHER_API_KEY"]
-    base_url = "https://api.openweathermap.org/data/2.5/weather"
+    api_key = current_app.config.get("OPENWEATHER_API_KEY")
+    units = session.get("units", "metric")
 
-    params = {"q": city, "appid": api_key, "units": "metric", "lang": "zh_tw"}
-
-    try:
-        print(f"正在呼叫 API 查詢 {city}...")
-        response = requests.get(base_url, params=params, timeout=5)
-        response.raise_for_status()  # 如果狀態碼不是 200，會拋出 HTTPError
-        return response.json()
-    except requests.exceptions.HTTPError as e:
-        status_code = e.response.status_code if e.response is not None else 0
-        if status_code == 404:
-            current_app.logger.warning(f"找不到城市: {city}")  # 改用 logger
-        elif status_code == 401:
-            current_app.logger.error("API Key 無效")
-        else:
-            current_app.logger.error(f"HTTP 錯誤: {e}")
-    except requests.exceptions.RequestException as e:
-        current_app.logger.error(f"連線錯誤: {e}")
-    except ValueError as e:  # 捕捉 JSON 解析錯誤
-        current_app.logger.error(f"API 回傳資料格式錯誤: {e}")
-
-    return None
+    params = {"q": city, "appid": api_key, "units": units, "lang": "zh_tw"}
+    return _fetch_weather_data(params)
 
 
 def format_weather_data(data):
@@ -89,6 +101,7 @@ def get_weather_icon_class(icon_code):
     return mapping.get(icon_code, "ri-question-fill text-gray-500")
 
 
+@cache.memoize(timeout=600)  # 快取 10 分鐘
 def get_weather_by_coords(lat, lon):
     """
     根據經緯度取得當前天氣
@@ -96,35 +109,15 @@ def get_weather_by_coords(lat, lon):
     :param lon: 經度
     :return: 成功回傳天氣資料字典，失敗回傳 None
     """
-    api_key = current_app.config["OPENWEATHER_API_KEY"]
-    base_url = "https://api.openweathermap.org/data/2.5/weather"
+    api_key = current_app.config.get("OPENWEATHER_API_KEY")
+    units = session.get("units", "metric")
 
     params = {
         "lat": lat,
         "lon": lon,
         "appid": api_key,
-        "units": "metric",
+        "units": units,
         "lang": "zh_tw",
     }
 
-    try:
-        print(f"正在呼叫 API 查詢經緯度 ({lat}, {lon}) 的天氣...")
-        response = requests.get(base_url, params=params, timeout=5)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.HTTPError as e:
-        status_code = e.response.status_code if e.response is not None else 0
-        if status_code == 404:
-            current_app.logger.warning(
-                f"找不到經緯度: ({lat}, {lon}) 的城市"
-            )  # 改用 logger
-        elif status_code == 401:
-            current_app.logger.error("API Key 無效")
-        else:
-            current_app.logger.error(f"HTTP 錯誤: {e}")
-    except requests.exceptions.RequestException as e:
-        current_app.logger.error(f"連線錯誤: {e}")
-    except ValueError as e:
-        current_app.logger.error(f"API 回傳資料格式錯誤: {e}")
-
-    return None
+    return _fetch_weather_data(params)
