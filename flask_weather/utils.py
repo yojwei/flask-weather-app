@@ -121,3 +121,9 @@ def get_weather_by_coords(lat, lon):
     }
 
     return _fetch_weather_data(params)
+
+
+def clear_weather_cache():
+    """清除所有天氣相關的快取"""
+    cache.delete_memoized(get_current_weather)
+    cache.delete_memoized(get_weather_by_coords)
