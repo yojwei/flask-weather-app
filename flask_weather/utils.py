@@ -124,6 +124,12 @@ def get_weather_by_coords(lat, lon):
 
 
 def clear_weather_cache():
-    """清除所有天氣相關的快取"""
-    cache.delete_memoized(get_current_weather)
-    cache.delete_memoized(get_weather_by_coords)
+    """清除所有天氣相關的快取，並記錄成功或失敗的日誌。回傳 True 表示成功，False 表示失敗。"""
+    try:
+        cache.delete_memoized(get_current_weather)
+        cache.delete_memoized(get_weather_by_coords)
+        current_app.logger.debug("已清除天氣快取")
+        return True
+    except Exception as e:
+        current_app.logger.error(f"清除天氣快取失敗: {e}")
+        return False
