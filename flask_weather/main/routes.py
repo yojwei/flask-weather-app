@@ -1,4 +1,12 @@
-from flask import render_template, session, flash, redirect, request, url_for, current_app
+from flask import (
+    render_template,
+    session,
+    flash,
+    redirect,
+    request,
+    url_for,
+    current_app,
+)
 from flask_weather.weather.forms import SearchForm
 from . import main_bp
 from flask_weather.utils import clear_weather_cache
@@ -22,8 +30,5 @@ def set_units(unit):
     if unit in ["metric", "imperial"]:
         session["units"] = unit
         flash(f"已切換至 {'攝氏 (°C)' if unit == 'metric' else '華氏 (°F)'}", "success")
-        try:
-            clear_weather_cache()
-        except Exception as e:
-            current_app.logger.error(f"清除天氣快取失敗: {e}")
+        clear_weather_cache()
     return redirect(request.referrer or url_for("main.index"))
