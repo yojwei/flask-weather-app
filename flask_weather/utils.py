@@ -87,3 +87,44 @@ def get_weather_icon_class(icon_code):
         "50n": "ri-foggy-fill text-gray-300",
     }
     return mapping.get(icon_code, "ri-question-fill text-gray-500")
+
+
+def get_weather_by_coords(lat, lon):
+    """
+    根據經緯度取得當前天氣
+    :param lat: 緯度
+    :param lon: 經度
+    :return: 成功回傳天氣資料字典，失敗回傳 None
+    """
+    api_key = current_app.config["OPENWEATHER_API_KEY"]
+    base_url = "https://api.openweathermap.org/data/2.5/weather"
+
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": api_key,
+        "units": "metric",
+        "lang": "zh_tw",
+    }
+
+    try:
+        print(f"正在呼叫 API 查詢經緯度 ({lat}, {lon}) 的天氣...")
+        response = requests.get(base_url, params=params, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.HTTPError as e:
+        status_code = e.response.status_code if e.response is not None else 0
+        if status_code == 404:
+            current_app.logger.warning(
+                f"找不到經緯度: ({lat}, {lon}) 的城市"
+            )  # 改用 logger
+        elif status_code == 401:
+            current_app.logger.error("API Key 無效")
+        else:
+            current_app.logger.error(f"HTTP 錯誤: {e}")
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"連線錯誤: {e}")
+    except ValueError as e:
+        current_app.logger.error(f"API 回傳資料格式錯誤: {e}")
+
+    return None

@@ -26,7 +26,36 @@
             </div>
             {{ form.submit(class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded
             focus:outline-none focus:shadow-outline cursor-pointer") }}
+            <button type="button" id="geo-btn"
+                class="border border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                title="使用目前位置">
+                <i class="ri-map-pin-fill"></i>
+            </button>
         </form>
     </div>
 </div>
+
+<script>
+    document.getElementById('geo-btn').addEventListener('click', function () {
+        if (navigator.geolocation) {
+            // 顯示 Loading 狀態
+            this.innerHTML = 'Loading...';
+
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+
+                // 將經緯度傳送給後端
+                window.location.href = `{{ url_for('weather.search_by_geo') }}?lat=${lat}&lon=${lon}`;
+            }, function (error) {
+                alert('無法取得您的位置: ' + error.message);
+                // 復原按鈕
+                document.getElementById('geo-btn').innerHTML = '<i class="ri-map-pin-fill"></i>';
+            });
+        } else {
+            alert('您的瀏覽器不支援地理定位功能。');
+        }
+    });
+</script>
+
 {% endblock %}
