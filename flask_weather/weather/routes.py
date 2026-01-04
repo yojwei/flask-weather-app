@@ -5,6 +5,9 @@ from flask_weather.utils import (
     get_current_weather,
     format_weather_data,
     get_weather_by_coords,
+    get_forecast,
+    get_forecast_by_coords,
+    format_forecast_data,
 )
 
 
@@ -18,10 +21,14 @@ def search():
         city = form.city.data
 
         raw_data = get_current_weather(city)
+        forecast = get_forecast(city)  # 新增的預報呼叫
 
-        if raw_data:
+        if raw_data and forecast:
             weather_data = format_weather_data(raw_data)
-            return render_template("weather.html", city=city, data=weather_data)
+            forecast = format_forecast_data(forecast)  # 格式化預報資料
+            return render_template(
+                "weather.html", city=city, data=weather_data, forecast=forecast
+            )
         else:
             flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
             return redirect(url_for("weather.search"))
@@ -67,10 +74,12 @@ def search_by_geo():
 
     # 呼叫 Service
     raw_data = get_weather_by_coords(lat, lon)
+    forecast = get_forecast_by_coords(lat, lon)
 
     if raw_data:
         weather_data = format_weather_data(raw_data)
-        return render_template("weather.html", data=weather_data)
+        forecast = format_forecast_data(forecast)
+        return render_template("weather.html", data=weather_data, forecast=forecast)
     else:
         flash("無法取得該位置的天氣資訊", "danger")
         return redirect(url_for("main.index"))

@@ -4,6 +4,7 @@ import requests
 from flask import current_app, session
 from datetime import datetime
 from flask_weather import cache
+from collections import defaultdict
 
 
 def _fetch_weather_data(params, timeout=5):
@@ -133,3 +134,84 @@ def clear_weather_cache():
     except Exception as e:
         current_app.logger.error(f"清除天氣快取失敗: {e}")
         return False
+
+
+@cache.memoize(timeout=600)  # 快取 10 分鐘
+def get_forecast(city):
+    """
+    取得指定城市的天氣預報
+    :param city: 城市名稱
+    :return: 成功回傳天氣預報資料字典，失敗回傳 None
+    """
+    api_key = current_app.config.get("OPENWEATHER_API_KEY")
+    units = session.get("units", "metric")
+
+    params = {"q": city, "appid": api_key, "units": units, "lang": "zh_tw"}
+    base_url = "https://api.openweathermap.org/data/2.5/forecast"
+
+    try:
+        current_app.logger.debug(f"呼叫 OpenWeather Forecast API：{params}")
+        response = requests.get(base_url, params=params, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"取得天氣預報失敗: {e}")
+        return None
+
+
+def format_forecast_data(data):
+    """
+    將 OpenWeatherMap 的預報資料轉換為前端易用的格式
+    """
+    if not data:
+        return None
+
+    daily_forecasts = defaultdict(list)
+
+    for item in data.get("list", []):
+        # item['dt'] 是 timestamp
+        dt = datetime.fromtimestamp(item["dt"])
+        date_str = dt.strftime("%Y-%m-%d")
+
+        # 整理單筆資料
+        forecast_item = {
+            "time": dt.strftime("%H:%M"),
+            "temp": round(item["main"]["temp"], 1),
+            "description": item["weather"][0]["description"],
+            "icon": item["weather"][0]["icon"],
+            "pop": int(
+                item.get("pop", 0) * 100
+            ),  # 降雨機率 (Probability of Precipitation)
+        }
+
+        daily_forecasts[date_str].append(forecast_item)
+
+    return dict(daily_forecasts)
+
+
+def get_forecast_by_coords(lat, lon):
+    """
+    根據經緯度取得天氣預報
+    :param lat: 緯度
+    :param lon: 經度
+    :return: 成功回傳天氣預報資料字典，失敗回傳 None
+    """
+    api_key = current_app.config.get("OPENWEATHER_API_KEY")
+    units = session.get("units", "metric")
+
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": api_key,
+        "units": units,
+        "lang": "zh_tw",
+    }
+    base_url = "https://api.openweathermap.org/data/2.5/forecast"
+    try:
+        current_app.logger.debug(f"呼叫 OpenWeather Forecast API：{params}")
+        response = requests.get(base_url, params=params, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"取得天氣預報失敗: {e}")
+        return None
