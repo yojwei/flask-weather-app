@@ -90,8 +90,8 @@ def get_weather_icon_class(icon_code):
         "04n": "ri-cloudy-2-fill text-gray-500",
         "09d": "ri-showers-fill text-blue-400",  # 毛毛雨
         "09n": "ri-showers-fill text-blue-300",
-        "10d": "ri-rain-fill text-blue-500",  # 雨天
-        "10n": "ri-rain-fill text-blue-400",
+        "10d": "ri-rainy-fill text-blue-500",  # 雨天
+        "10n": "ri-rainy-fill text-blue-400",
         "11d": "ri-thunderstorms-fill text-purple-500",  # 雷雨
         "11n": "ri-thunderstorms-fill text-purple-400",
         "13d": "ri-snowy-fill text-blue-200",  # 雪
@@ -172,6 +172,19 @@ def format_forecast_data(data):
         # item['dt'] 是 timestamp
         dt = datetime.fromtimestamp(item["dt"])
         date_str = dt.strftime("%Y-%m-%d")
+        weekday = dt.strftime("%A")  # 星期幾的英文名稱
+
+        # 將英文星期轉換為中文
+        weekday_map = {
+            "Monday": "(一)",
+            "Tuesday": "(二)",
+            "Wednesday": "(三)",
+            "Thursday": "(四)",
+            "Friday": "(五)",
+            "Saturday": "(六)",
+            "Sunday": "(日)",
+        }
+        weekday_zh = weekday_map.get(weekday, weekday)
 
         # 整理單筆資料
         forecast_item = {
@@ -182,6 +195,7 @@ def format_forecast_data(data):
             "pop": int(
                 item.get("pop", 0) * 100
             ),  # 降雨機率 (Probability of Precipitation)
+            "weekday": weekday_zh,  # 星期幾
         }
 
         daily_forecasts[date_str].append(forecast_item)
@@ -215,3 +229,28 @@ def get_forecast_by_coords(lat, lon):
     except requests.exceptions.RequestException as e:
         current_app.logger.error(f"取得天氣預報失敗: {e}")
         return None
+
+
+def prepare_chart_data(forecast_data):
+    """
+    將預報資料整理為圖表所需格式
+    :param forecast_data: 經過 format_forecast_data 處理的預報資料
+    :return: 包含時間軸與溫度資料的字典
+    """
+    if not forecast_data:
+        return None
+
+    chart_data = {"labels": [], "temps": [], "pops": []}
+
+    count = 0
+    for date, items in forecast_data.items():
+        for item in items:
+            if count >= 12:
+                break
+
+            chart_data["labels"].append(f"{date[8:]} {item['weekday']} {item['time']}")
+            chart_data["temps"].append(item["temp"])
+            chart_data["pops"].append(item["pop"])
+            count += 1
+
+    return chart_data
