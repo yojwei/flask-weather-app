@@ -205,6 +205,7 @@
             </div>
             <div class="card-body">
                 <canvas id="tempChart"></canvas>
+                <div id="chartFallback" style="display:none;" class="text-center text-gray-500 mt-2">無足夠預報資料可顯示圖表</div>
             </div>
         </div>
         <div class="mt-4 text-center">
@@ -218,56 +219,70 @@
 {% block scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('tempChart').getContext('2d');
     const chartData = {{ chart_data | tojson }};
+    const tempUnit = '{{ "C" if session.get("units","metric") == "metric" else "F" }}';
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: chartData.labels,
-            datasets: [
-                {
-                    label: '溫度 (°C)',
-                    data: chartData.temps,
-                    borderColor: 'rgb(255, 99, 132)',
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    tension: 0.4, // 曲線平滑度
-                    yAxisID: 'y'
-                },
-                {
-                    label: '降雨機率 (%)',
-                    data: chartData.pops,
-                    borderColor: 'rgb(54, 162, 235)',
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    type: 'bar', // 混合圖表：長條圖
-                    yAxisID: 'y1'
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            interaction: {
-                mode: 'index',
-                intersect: false,
+    const canvas = document.getElementById('tempChart');
+    const fallback = document.getElementById('chartFallback');
+
+    if (!chartData) {
+        // 沒有圖表資料：隱藏 canvas 並顯示提示文字
+        if (canvas) canvas.style.display = 'none';
+        if (fallback) fallback.style.display = 'block';
+    } else {
+        // 顯示 canvas 並隱藏提示
+        if (canvas) canvas.style.display = '';
+        if (fallback) fallback.style.display = 'none';
+
+        const ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: `溫度 (°${tempUnit})`,
+                        data: chartData.temps,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.4, // 曲線平滑度
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: '降雨機率 (%)',
+                        data: chartData.pops,
+                        borderColor: 'rgb(54, 162, 235)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        type: 'bar', // 混合圖表：長條圖
+                        yAxisID: 'y1'
+                    }
+                ]
             },
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: { display: true, text: '溫度' }
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
                 },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    title: { display: true, text: '降雨機率' },
-                    grid: { drawOnChartArea: false }, // 避免格線重疊
-                    min: 0,
-                    max: 100
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: { display: true, text: '溫度' }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        title: { display: true, text: '降雨機率' },
+                        grid: { drawOnChartArea: false }, // 避免格線重疊
+                        min: 0,
+                        max: 100
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 </script>
 {% endblock %}

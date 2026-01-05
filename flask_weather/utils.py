@@ -240,17 +240,25 @@ def prepare_chart_data(forecast_data):
     if not forecast_data:
         return None
 
-    chart_data = {"labels": [], "temps": [], "pops": []}
+    labels = []
+    temps = []
+    pops = []  # 降雨機率
 
+    # 限制為未來 12 筆（3 小時間隔，共 36 小時）
     count = 0
     for date, items in forecast_data.items():
         for item in items:
             if count >= 12:
                 break
 
-            chart_data["labels"].append(f"{date[8:]} {item['weekday']} {item['time']}")
-            chart_data["temps"].append(item["temp"])
-            chart_data["pops"].append(item["pop"])
+            # 格式化標籤: "05 (一) 12:00" -> 日 + 中文星期 + 時間
+            labels.append(f"{date[8:]} {item['weekday']} {item['time']}")
+            temps.append(item["temp"])
+            pops.append(item["pop"])
             count += 1
 
-    return chart_data
+        # 若已達上限則跳出外層迴圈以避免不必要的迭代
+        if count >= 12:
+            break
+
+    return {"labels": labels, "temps": temps, "pops": pops}
