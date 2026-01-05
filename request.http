@@ -21,11 +21,14 @@ GET http://127.0.0.1:5000/weather?city=Taichung
 ### GET 404 錯誤測試
 GET http://127.0.0.1:5000/hi
 
-### OPENWEATHER API 測試
+### OPENWEATHER API 測試 - 城市名稱
 GET https://api.openweathermap.org/data/2.5/weather?q={{$dotenv CITY}}&appid={{$dotenv OPENWEATHER_API_KEY}}&units=metric
 
 ### 使用者註冊測試
 GET http://127.0.0.1:5000/auth/register
 
-### OPENWEATHER API 測試
+### OPENWEATHER API 測試 - 天氣預報
 GET https://api.openweathermap.org/data/2.5/forecast?q={{$dotenv CITY}}&appid={{$dotenv OPENWEATHER_API_KEY}}&units=metric
+
+### OPENWEATHER API 測試 - 經緯度
+GET https://api.openweathermap.org/data/2.5/weather?lat={{$dotenv LAT}}&lon={{$dotenv LON}}&appid={{$dotenv OPENWEATHER_API_KEY}}&units=metric
