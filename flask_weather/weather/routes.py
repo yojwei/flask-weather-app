@@ -8,6 +8,7 @@ from flask_weather.utils import (
     get_forecast,
     get_forecast_by_coords,
     format_forecast_data,
+    prepare_chart_data,
 )
 
 
@@ -26,8 +27,13 @@ def search():
         if raw_data and forecast:
             weather_data = format_weather_data(raw_data)
             forecast = format_forecast_data(forecast)  # 格式化預報資料
+            chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
             return render_template(
-                "weather.html", city=city, data=weather_data, forecast=forecast
+                "weather.html",
+                city=city,
+                data=weather_data,
+                forecast=forecast,
+                chart_data=chart_data,
             )
         else:
             flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
