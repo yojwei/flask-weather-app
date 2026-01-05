@@ -85,7 +85,13 @@ def search_by_geo():
     if raw_data:
         weather_data = format_weather_data(raw_data)
         forecast = format_forecast_data(forecast)
-        return render_template("weather.html", data=weather_data, forecast=forecast)
+        chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
+        return render_template(
+            "weather.html",
+            data=weather_data,
+            forecast=forecast,
+            chart_data=chart_data,
+        )
     else:
         flash("無法取得該位置的天氣資訊", "danger")
         return redirect(url_for("main.index"))
