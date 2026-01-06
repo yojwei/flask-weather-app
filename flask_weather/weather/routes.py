@@ -1,6 +1,9 @@
 from flask import request, render_template, flash, redirect, url_for
 from . import weather_bp
 from .forms import SearchForm
+from flask_login import login_required, current_user
+from flask_weather import db
+from flask_weather.models import SavedCity
 from flask_weather.utils import (
     get_current_weather,
     format_weather_data,
@@ -28,12 +31,24 @@ def search():
             weather_data = format_weather_data(raw_data)
             forecast = format_forecast_data(forecast)  # 格式化預報資料
             chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
+
+            is_saved = False
+            if current_user.is_authenticated:
+                is_saved = (
+                    SavedCity.query.filter_by(
+                        user_id=current_user.id,
+                        city_name=weather_data["city"],  # 注意：需確保名稱一致性
+                    ).first()
+                    is not None
+                )
+
             return render_template(
                 "weather.html",
                 city=city,
                 data=weather_data,
                 forecast=forecast,
                 chart_data=chart_data,
+                is_saved=is_saved,
             )
         else:
             flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
@@ -86,12 +101,62 @@ def search_by_geo():
         weather_data = format_weather_data(raw_data)
         forecast = format_forecast_data(forecast)
         chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
+
+        is_saved = False
+        if current_user.is_authenticated:
+            is_saved = (
+                SavedCity.query.filter_by(
+                    user_id=current_user.id,
+                    city_name=weather_data["city"],  # 注意：需確保名稱一致性
+                ).first()
+                is not None
+            )
+
         return render_template(
             "weather.html",
             data=weather_data,
             forecast=forecast,
             chart_data=chart_data,
+            is_saved=is_saved,
         )
     else:
         flash("無法取得該位置的天氣資訊", "danger")
         return redirect(url_for("main.index"))
+
+
+@weather_bp.route("/save/<city>")
+@login_required
+def save_city(city):
+    """儲存使用者喜愛的城市"""
+    existing = SavedCity.query.filter_by(
+        user_id=current_user.id, city_name=city
+    ).first()
+
+    if existing:
+        flash(f"{city} 已經在您的收藏清單中了。", "info")
+    else:
+        new_city = SavedCity(city_name=city, user=current_user)
+        db.session.add(new_city)
+        db.session.commit()
+        flash(f"已將 {city} 加入收藏！", "success")
+
+    # 導回上一頁
+    return redirect(request.referrer or url_for("main.index"))
+
+
+@weather_bp.route("/unsave/<city>")
+@login_required
+def unsave_city(city):
+    """移除使用者喜愛的城市"""
+    saved_city = SavedCity.query.filter_by(
+        user_id=current_user.id, city_name=city
+    ).first()
+
+    if saved_city:
+        db.session.delete(saved_city)
+        db.session.commit()
+        flash(f"已移除 {city}。", "success")
+    else:
+        flash(f"找不到收藏紀錄。", "warning")
+
+    return redirect(request.referrer or url_for("main.index"))
