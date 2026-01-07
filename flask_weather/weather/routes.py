@@ -67,21 +67,43 @@ def _validate_coordinates(lat, lon):
         return None
 
 
+def _search_city_weather(city):
+    """搜尋指定城市的天氣資訊
+
+    Args:
+        city: 城市名稱
+
+    Returns:
+        Flask response 或 None
+    """
+    weather_data = get_current_weather(city)
+    forecast = get_forecast(city)
+
+    result = _render_weather_result(weather_data, forecast, city=city)
+    if result:
+        return result
+
+    flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
+    return None
+
+
 @weather_bp.route("/search", methods=["GET", "POST"])
 def search():
     """天氣搜尋"""
     form = SearchForm()
 
-    if form.validate_on_submit():
-        city = form.city.data
-        weather_data = get_current_weather(city)
-        forecast = get_forecast(city)
-
-        result = _render_weather_result(weather_data, forecast, city=city)
+    # 支持 GET 請求的 city 查詢參數
+    city_param = request.args.get("city")
+    if city_param and request.method == "GET":
+        result = _search_city_weather(city_param)
         if result:
             return result
+        return redirect(url_for("weather.search"))
 
-        flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
+    if form.validate_on_submit():
+        result = _search_city_weather(form.city.data)
+        if result:
+            return result
         return redirect(url_for("weather.search"))
 
     return render_template("index.html", form=form)
@@ -127,19 +149,28 @@ def search_by_geo():
     return redirect(url_for("main.index"))
 
 
+def _get_user_saved_city(city_name):
+    """取得使用者收藏的特定城市
+
+    Args:
+        city_name: 城市名稱
+
+    Returns:
+        SavedCity 物件或 None
+    """
+    return SavedCity.query.filter_by(
+        user_id=current_user.id, city_name=city_name
+    ).first()
+
+
 @weather_bp.route("/save/<city>")
 @login_required
 def save_city(city):
     """儲存使用者喜愛的城市"""
-    existing = SavedCity.query.filter_by(
-        user_id=current_user.id, city_name=city
-    ).first()
-
-    if existing:
+    if _get_user_saved_city(city):
         flash(f"{city} 已經在您的收藏清單中了。", "info")
     else:
-        new_city = SavedCity(city_name=city, user=current_user)
-        db.session.add(new_city)
+        db.session.add(SavedCity(city_name=city, user=current_user))
         db.session.commit()
         flash(f"已將 {city} 加入收藏！", "success")
 
@@ -150,9 +181,7 @@ def save_city(city):
 @login_required
 def unsave_city(city):
     """移除使用者喜愛的城市"""
-    saved_city = SavedCity.query.filter_by(
-        user_id=current_user.id, city_name=city
-    ).first()
+    saved_city = _get_user_saved_city(city)
 
     if saved_city:
         db.session.delete(saved_city)
