@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}我的儀表板{% endblock %}
+
+{% block content %}
+<div class="flex justify-center">
+    <div class="w-full">
+        <h2 class="text-3xl font-bold mb-6">我的收藏城市</h2>
+
+        {% if reports %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for report in reports %}
+            {# 根據天氣圖標動態設定配色 #}
+            {% set header_class = 'bg-blue-100' %}
+            {% set header_text_class = 'text-blue-900' %}
+            {% set body_class = 'bg-blue-50' %}
+            {% set border_class = 'border-blue-100' %}
+
+            {% if '01' in report.icon %}
+            {% set header_class = 'bg-orange-100' %}
+            {% set header_text_class = 'text-orange-900' %}
+            {% set body_class = 'bg-orange-50' %}
+            {% set border_class = 'border-orange-100' %}
+            {% elif '02' in report.icon or '03' in report.icon or '04' in report.icon %}
+            {% set header_class = 'bg-slate-100' %}
+            {% set header_text_class = 'text-slate-700' %}
+            {% set body_class = 'bg-slate-50' %}
+            {% set border_class = 'border-slate-200' %}
+            {% elif '09' in report.icon or '10' in report.icon %}
+            {% set header_class = 'bg-blue-100' %}
+            {% set header_text_class = 'text-blue-900' %}
+            {% set body_class = 'bg-blue-50' %}
+            {% set border_class = 'border-blue-100' %}
+            {% elif '11' in report.icon %}
+            {% set header_class = 'bg-indigo-100' %}
+            {% set header_text_class = 'text-indigo-900' %}
+            {% set body_class = 'bg-indigo-50' %}
+            {% set border_class = 'border-indigo-100' %}
+            {% elif '13' in report.icon %}
+            {% set header_class = 'bg-sky-100' %}
+            {% set header_text_class = 'text-sky-900' %}
+            {% set body_class = 'bg-sky-50' %}
+            {% set border_class = 'border-sky-100' %}
+            {% elif '50' in report.icon %}
+            {% set header_class = 'bg-gray-100' %}
+            {% set header_text_class = 'text-gray-800' %}
+            {% set body_class = 'bg-gray-50' %}
+            {% set border_class = 'border-gray-200' %}
+            {% endif %}
+
+            <div
+                class="bg-white rounded-lg shadow-md overflow-hidden border {{ border_class }} transition-all duration-300 hover:shadow-lg">
+                <div class="{{ header_class }} {{ header_text_class }} p-4">
+                    <div class="flex justify-between items-center">
+                        <h5 class="text-xl font-bold">{{ report.city }}</h5>
+                        <i class="{{ report.icon | weather_icon }} text-4xl"></i>
+                    </div>
+                </div>
+                <div class="p-6 {{ body_class }}">
+                    <h2 class="text-5xl font-bold mb-2">{{ report.temp }}°</h2>
+                    <p class="text-gray-600 capitalize mb-4">{{ report.description }}</p>
+
+                    <div class="space-y-2 text-sm text-gray-600">
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center">
+                                <i class="ri-drop-fill text-blue-500 mr-2"></i>濕度
+                            </span>
+                            <span class="font-semibold">{{ report.humidity }}%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="flex items-center">
+                                <i class="ri-windy-fill text-gray-500 mr-2"></i>風速
+                            </span>
+                            <span class="font-semibold">{{ report.wind_speed }} m/s</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+                    <a href="{{ url_for('weather.search', city=report.city) }}"
+                        class="inline-block px-4 py-2 bg-blue-500 text-white text-sm font-semibold rounded hover:bg-blue-600 transition">
+                        詳細資訊
+                    </a>
+                    <a href="{{ url_for('weather.unsave_city', city=report.city) }}"
+                        class="inline-block px-4 py-2 border border-red-500 text-red-500 text-sm font-semibold rounded hover:bg-red-50 transition">
+                        <i class="ri-heart-fill mr-1"></i>移除
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+            <div class="text-blue-600 mb-2">
+                <i class="ri-information-line text-4xl"></i>
+            </div>
+            <p class="text-blue-800">
+                您目前沒有收藏任何城市。快去 <a href="{{ url_for('main.index') }}"
+                    class="text-blue-600 font-semibold hover:underline">搜尋</a> 並加入收藏吧！
+            </p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

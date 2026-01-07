@@ -32,7 +32,7 @@ def _render_weather_result(weather_data, forecast, city=None):
     """渲染天氣結果頁面的共用函數"""
     if not weather_data or not forecast:
         return None
-    
+
     formatted_weather = format_weather_data(weather_data)
     formatted_forecast = format_forecast_data(forecast)
     chart_data = prepare_chart_data(formatted_forecast)
@@ -50,7 +50,7 @@ def _render_weather_result(weather_data, forecast, city=None):
 
 def _validate_coordinates(lat, lon):
     """驗證經緯度座標
-    
+
     Returns:
         tuple: (lat_float, lon_float) 如果有效
         None: 如果無效
@@ -58,10 +58,10 @@ def _validate_coordinates(lat, lon):
     try:
         lat_float = float(lat)
         lon_float = float(lon)
-        
+
         if not (-90 <= lat_float <= 90) or not (-180 <= lon_float <= 180):
             return None
-            
+
         return lat_float, lon_float
     except (ValueError, TypeError):
         return None
@@ -80,7 +80,7 @@ def search():
         result = _render_weather_result(weather_data, forecast, city=city)
         if result:
             return result
-        
+
         flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
         return redirect(url_for("weather.search"))
 

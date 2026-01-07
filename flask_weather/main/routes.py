@@ -5,11 +5,15 @@ from flask import (
     redirect,
     request,
     url_for,
-    current_app,
 )
 from flask_weather.weather.forms import SearchForm
 from . import main_bp
-from flask_weather.utils import clear_weather_cache
+from flask_weather.utils import (
+    clear_weather_cache,
+    get_current_weather,
+    format_weather_data,
+)
+from flask_login import login_required, current_user
 
 
 @main_bp.route("/")
@@ -32,3 +36,20 @@ def set_units(unit):
         flash(f"已切換至 {'攝氏 (°C)' if unit == 'metric' else '華氏 (°F)'}", "success")
         clear_weather_cache()
     return redirect(request.referrer or url_for("main.index"))
+
+
+@main_bp.route("/dashboard")
+@login_required
+def dashboard():
+    # 取得使用者所有收藏城市
+    saved_cities = current_user.saved_cities.all()
+
+    weather_reports = []
+    for saved in saved_cities:
+        # 逐一查詢天氣 (注意：這可能會很慢，後續需優化)
+        raw_data = get_current_weather(saved.city_name)
+        if raw_data:
+            data = format_weather_data(raw_data)
+            weather_reports.append(data)
+
+    return render_template("dashboard.html", reports=weather_reports)
