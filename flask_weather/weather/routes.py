@@ -15,44 +15,74 @@ from flask_weather.utils import (
 )
 
 
+def _check_if_city_saved(city_name):
+    """檢查城市是否已被當前使用者收藏"""
+    if not current_user.is_authenticated:
+        return False
+    return (
+        SavedCity.query.filter_by(
+            user_id=current_user.id,
+            city_name=city_name,
+        ).first()
+        is not None
+    )
+
+
+def _render_weather_result(weather_data, forecast, city=None):
+    """渲染天氣結果頁面的共用函數"""
+    if not weather_data or not forecast:
+        return None
+    
+    formatted_weather = format_weather_data(weather_data)
+    formatted_forecast = format_forecast_data(forecast)
+    chart_data = prepare_chart_data(formatted_forecast)
+    is_saved = _check_if_city_saved(formatted_weather["city"])
+
+    return render_template(
+        "weather.html",
+        city=city,
+        data=formatted_weather,
+        forecast=formatted_forecast,
+        chart_data=chart_data,
+        is_saved=is_saved,
+    )
+
+
+def _validate_coordinates(lat, lon):
+    """驗證經緯度座標
+    
+    Returns:
+        tuple: (lat_float, lon_float) 如果有效
+        None: 如果無效
+    """
+    try:
+        lat_float = float(lat)
+        lon_float = float(lon)
+        
+        if not (-90 <= lat_float <= 90) or not (-180 <= lon_float <= 180):
+            return None
+            
+        return lat_float, lon_float
+    except (ValueError, TypeError):
+        return None
+
+
 @weather_bp.route("/search", methods=["GET", "POST"])
 def search():
     """天氣搜尋"""
     form = SearchForm()
-    weather_data = None
 
     if form.validate_on_submit():
         city = form.city.data
+        weather_data = get_current_weather(city)
+        forecast = get_forecast(city)
 
-        raw_data = get_current_weather(city)
-        forecast = get_forecast(city)  # 新增的預報呼叫
-
-        if raw_data and forecast:
-            weather_data = format_weather_data(raw_data)
-            forecast = format_forecast_data(forecast)  # 格式化預報資料
-            chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
-
-            is_saved = False
-            if current_user.is_authenticated:
-                is_saved = (
-                    SavedCity.query.filter_by(
-                        user_id=current_user.id,
-                        city_name=weather_data["city"],  # 注意：需確保名稱一致性
-                    ).first()
-                    is not None
-                )
-
-            return render_template(
-                "weather.html",
-                city=city,
-                data=weather_data,
-                forecast=forecast,
-                chart_data=chart_data,
-                is_saved=is_saved,
-            )
-        else:
-            flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
-            return redirect(url_for("weather.search"))
+        result = _render_weather_result(weather_data, forecast, city=city)
+        if result:
+            return result
+        
+        flash(f"無法取得 {city} 的天氣資訊，請確認城市名稱是否正確。", "danger")
+        return redirect(url_for("weather.search"))
 
     return render_template("index.html", form=form)
 
@@ -72,6 +102,7 @@ def weather_api(city):
 
 @weather_bp.route("/search/geo")
 def search_by_geo():
+    """根據地理座標搜尋天氣"""
     lat = request.args.get("lat")
     lon = request.args.get("lon")
 
@@ -79,49 +110,21 @@ def search_by_geo():
         flash("座標資訊錯誤", "danger")
         return redirect(url_for("main.index"))
 
-    try:
-        # 驗證座標格式
-        lat = float(lat)
-        lon = float(lon)
-
-        # 基本範圍檢查
-        if not (-90 <= lat <= 90) or not (-180 <= lon <= 180):
-            flash("座標範圍錯誤", "danger")
-            return redirect(url_for("main.index"))
-
-    except ValueError:
-        flash("座標格式錯誤", "danger")
+    coords = _validate_coordinates(lat, lon)
+    if not coords:
+        flash("座標格式或範圍錯誤", "danger")
         return redirect(url_for("main.index"))
 
-    # 呼叫 Service
-    raw_data = get_weather_by_coords(lat, lon)
+    lat, lon = coords
+    weather_data = get_weather_by_coords(lat, lon)
     forecast = get_forecast_by_coords(lat, lon)
 
-    if raw_data:
-        weather_data = format_weather_data(raw_data)
-        forecast = format_forecast_data(forecast)
-        chart_data = prepare_chart_data(forecast)  # 準備圖表資料（如果需要）
+    result = _render_weather_result(weather_data, forecast)
+    if result:
+        return result
 
-        is_saved = False
-        if current_user.is_authenticated:
-            is_saved = (
-                SavedCity.query.filter_by(
-                    user_id=current_user.id,
-                    city_name=weather_data["city"],  # 注意：需確保名稱一致性
-                ).first()
-                is not None
-            )
-
-        return render_template(
-            "weather.html",
-            data=weather_data,
-            forecast=forecast,
-            chart_data=chart_data,
-            is_saved=is_saved,
-        )
-    else:
-        flash("無法取得該位置的天氣資訊", "danger")
-        return redirect(url_for("main.index"))
+    flash("無法取得該位置的天氣資訊", "danger")
+    return redirect(url_for("main.index"))
 
 
 @weather_bp.route("/save/<city>")
@@ -140,7 +143,6 @@ def save_city(city):
         db.session.commit()
         flash(f"已將 {city} 加入收藏！", "success")
 
-    # 導回上一頁
     return redirect(request.referrer or url_for("main.index"))
 
 
