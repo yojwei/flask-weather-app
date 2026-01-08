@@ -71,6 +71,8 @@ def format_weather_data(data):
         "icon": data["weather"][0]["icon"],
         "condition": data["weather"][0]["main"],  # 例如 'Clouds', 'Rain'
         "dt": datetime.fromtimestamp(data["dt"]).strftime("%Y-%m-%d %H:%M"),
+        "sunrise": datetime.fromtimestamp(data["sys"]["sunrise"]).strftime("%H:%M"),
+        "sunset": datetime.fromtimestamp(data["sys"]["sunset"]).strftime("%H:%M"),
     }
 
 
@@ -262,3 +264,29 @@ def prepare_chart_data(forecast_data):
             break
 
     return {"labels": labels, "temps": temps, "pops": pops}
+
+
+@cache.memoize(timeout=3600)
+def get_air_pollution(lat, lon):
+    """
+    根據經緯度取得空氣污染資料
+    :param lat: 緯度
+    :param lon: 經度
+    :return: 成功回傳空氣污染資料字典，失敗回傳 None
+    """
+    api_key = current_app.config.get("OPENWEATHER_API_KEY")
+    params = {
+        "lat": lat,
+        "lon": lon,
+        "appid": api_key,
+    }
+    base_url = "http://api.openweathermap.org/data/2.5/air_pollution"
+
+    try:
+        current_app.logger.debug(f"呼叫 OpenWeather Air Pollution API：{params}")
+        response = requests.get(base_url, params=params, timeout=5)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"取得空氣污染資料失敗: {e}")
+        return None

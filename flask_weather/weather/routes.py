@@ -12,6 +12,7 @@ from flask_weather.utils import (
     get_forecast_by_coords,
     format_forecast_data,
     prepare_chart_data,
+    get_air_pollution,
 )
 
 
@@ -28,7 +29,7 @@ def _check_if_city_saved(city_name):
     )
 
 
-def _render_weather_result(weather_data, forecast, city=None):
+def _render_weather_result(weather_data, forecast, city=None, pollution=None):
     """渲染天氣結果頁面的共用函數"""
     if not weather_data or not forecast:
         return None
@@ -45,6 +46,7 @@ def _render_weather_result(weather_data, forecast, city=None):
         forecast=formatted_forecast,
         chart_data=chart_data,
         is_saved=is_saved,
+        pollution=pollution,
     )
 
 
@@ -140,8 +142,9 @@ def search_by_geo():
     lat, lon = coords
     weather_data = get_weather_by_coords(lat, lon)
     forecast = get_forecast_by_coords(lat, lon)
+    pollution = get_air_pollution(lat, lon)
 
-    result = _render_weather_result(weather_data, forecast)
+    result = _render_weather_result(weather_data, forecast, pollution=pollution)
     if result:
         return result
 

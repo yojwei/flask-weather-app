@@ -56,61 +56,103 @@
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full">
-        <div class="shadow-md rounded-lg overflow-hidden transition-colors duration-300 {{ border_class }} bg-white">
+        <div class="flex flex-col md:flex-row">
             <div
-                class="{{ header_class }} {{ header_text_class }} p-4 text-center flex justify-center items-end space-x-4">
-                <h2 class="text-3xl font-bold mb-0">{{ data.city }}, {{ data.country }}</h2>
-                {% if current_user.is_authenticated %}
-                {% if is_saved %}
-                <a href="{{ url_for('weather.unsave_city', city=data.city) }}"
-                    class="inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-400 inset-ring inset-ring-gray-400/20"
-                    title="取消收藏">
-                    <i class="ri-heart-fill text-red-500"></i> 已收藏
-                </a>
-                {% else %}
-                <a href="{{ url_for('weather.save_city', city=data.city) }}"
-                    class="inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-400 inset-ring inset-ring-gray-400/20"
-                    title="加入收藏">
-                    <i class="ri-heart-line"></i> 收藏
-                </a>
-                {% endif %}
-                {% endif %}
-            </div>
-            <div class="p-6 {{ body_class }} {{ body_text_class }}">
-                <div class="flex flex-wrap items-center text-center">
-                    <div class="w-full md:w-1/2 mb-6 md:mb-0">
-                        <!-- 使用 Filter 顯示圖示 -->
-                        <div class="text-8xl mb-2">
-                            <i class="{{ data.icon | weather_icon }}"></i>
+                class="shadow-md rounded-lg overflow-hidden transition-colors duration-300 {{ border_class }} bg-white md:w-2/3 w-full mb-2">
+                <div
+                    class="{{ header_class }} {{ header_text_class }} p-4 text-center flex justify-center items-end space-x-4">
+                    <h2 class="text-3xl font-bold mb-0">{{ data.city }}, {{ data.country }}</h2>
+                    {% if current_user.is_authenticated %}
+                    {% if is_saved %}
+                    <a href="{{ url_for('weather.unsave_city', city=data.city) }}"
+                        class="inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-400 inset-ring inset-ring-gray-400/20"
+                        title="取消收藏">
+                        <i class="ri-heart-fill text-red-500"></i> 已收藏
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('weather.save_city', city=data.city) }}"
+                        class="inline-flex items-center rounded-md bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-400 inset-ring inset-ring-gray-400/20"
+                        title="加入收藏">
+                        <i class="ri-heart-line"></i> 收藏
+                    </a>
+                    {% endif %}
+                    {% endif %}
+                </div>
+                <div class="p-6 {{ body_class }} {{ body_text_class }}">
+                    <div class="flex-col md:flex md:flex-wrap items-center text-center">
+                        <div class="w-full md:w-1/2 mb-6 md:mb-0">
+                            <!-- 使用 Filter 顯示圖示 -->
+                            <div class="text-8xl mb-2">
+                                <i class="{{ data.icon | weather_icon }}"></i>
+                            </div>
+                            <h2 class="text-6xl font-bold">{{ data.temp }}°{{ 'C' if session.get('units', 'metric') ==
+                                'metric' else 'F' }}</h2>
+                            <p class="text-xl capitalize">{{ data.description }}</p>
                         </div>
-                        <h2 class="text-6xl font-bold">{{ data.temp }}°{{ 'C' if session.get('units', 'metric') ==
-                            'metric' else 'F' }}</h2>
-                        <p class="text-xl capitalize">{{ data.description }}</p>
-                    </div>
 
-                    <div class="w-full md:w-1/2">
-                        <ul class="divide-y divide-gray-200 text-left">
-                            <li class="py-3 flex justify-between items-center">
-                                <span><i class="ri-drop-fill text-blue-500 mr-2"></i>濕度</span>
-                                <span class="font-bold">{{ data.humidity }}%</span>
-                            </li>
-                            <li class="py-3 flex justify-between items-center">
-                                <span><i class="ri-windy-fill text-gray-500 mr-2"></i>風速</span>
-                                <span class="font-bold">{{ data.wind_speed }} m/s</span>
-                            </li>
-                            <li class="py-3 flex justify-between items-center">
-                                <span><i class="ri-temp-hot-fill text-red-500 mr-2"></i>體感溫度</span>
-                                <span class="font-bold">{{ data.feels_like }}°{{ 'C' if session.get('units', 'metric')
-                                    == 'metric' else 'F' }}</span>
-                            </li>
-                        </ul>
+                        <div class="w-full md:w-1/2">
+                            <ul class="divide-y divide-gray-200 text-left">
+                                <li class="py-3 flex justify-between items-center">
+                                    <span><i class="ri-drop-fill text-blue-500 mr-2"></i>濕度</span>
+                                    <span class="font-bold">{{ data.humidity }}%</span>
+                                </li>
+                                <li class="py-3 flex justify-between items-center">
+                                    <span><i class="ri-windy-fill text-gray-500 mr-2"></i>風速</span>
+                                    <span class="font-bold">{{ data.wind_speed }} m/s</span>
+                                </li>
+                                <li class="py-3 flex justify-between items-center">
+                                    <span><i class="ri-temp-hot-fill text-red-500 mr-2"></i>體感溫度</span>
+                                    <span class="font-bold">{{ data.feels_like }}°{{ 'C' if session.get('units',
+                                        'metric')
+                                        == 'metric' else 'F' }}</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-3 text-right text-xs text-gray-500 border-t border-gray-200">
+                    更新時間: {{ data.dt }}
+                </div>
+            </div>
+
+            <div class="flex flex-col w-full md:w-1/3 md:pl-2 md:gap-6">
+                {% set aqi_val = pollution.list[0].main.aqi %}
+                {% set aqi_map = {1: '優良', 2: '普通', 3: '對敏感族群不健康', 4: '不健康', 5: '非常不健康'} %}
+                {% set aqi_color = {1: 'text-green-500', 2: 'text-yellow-500', 3: 'text-orange-500', 4: 'text-red-500',
+                5:
+                'text-purple-700'} %}
+
+                <div class="w-full">
+                    <div class="bg-white rounded-lg shadow-lg p-6 text-center h-full">
+                        <h5 class="text-gray-500 text-lg mb-4">空氣品質 (AQI)</h5>
+                        <i class="ri-mist-line text-6xl {{ aqi_color[aqi_val] }}"></i>
+                        <h3 class="text-5xl font-bold {{ aqi_color[aqi_val] }} my-4">{{ aqi_val }}</h3>
+                        <p class="text-gray-700 mb-2">{{ aqi_map[aqi_val] }}</p>
+
+                        <!-- 詳細污染物濃度 (選用) -->
+                        <small class="text-gray-400 text-sm">PM2.5: {{ pollution.list[0].components.pm2_5 }}
+                            μg/m³</small>
+                    </div>
+                </div>
+
+                <div class="w-full">
+                    <div class="bg-white rounded-lg shadow-lg p-6 text-center h-full">
+                        <h5 class="text-gray-500 text-lg mb-4">日出與日落</h5>
+                        <div class="flex justify-around items-center mt-6">
+                            <div class="flex flex-col items-center">
+                                <i class="ri-sun-line text-6xl text-yellow-500 mb-2"></i>
+                                <p class="text-gray-700 font-semibold">{{ data.sunrise }}</p>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <i class="ri-moon-line text-6xl text-gray-600 mb-2"></i>
+                                <p class="text-gray-700 font-semibold">{{ data.sunset }}</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="bg-gray-50 p-3 text-right text-xs text-gray-500 border-t border-gray-200">
-                更新時間: {{ data.dt }}
-            </div>
         </div>
+
         <div class="mt-10">
             <h3 class="text-2xl font-bold mb-6">未來 5 天預報</h3>
 
