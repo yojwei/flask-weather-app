@@ -80,8 +80,15 @@ def _search_city_weather(city):
     """
     weather_data = get_current_weather(city)
     forecast = get_forecast(city)
+    
+    # 從天氣資料中取得經緯度，並取得空氣污染資訊
+    pollution = None
+    if weather_data and "coord" in weather_data:
+        lat = weather_data["coord"]["lat"]
+        lon = weather_data["coord"]["lon"]
+        pollution = get_air_pollution(lat, lon)
 
-    result = _render_weather_result(weather_data, forecast, city=city)
+    result = _render_weather_result(weather_data, forecast, city=city, pollution=pollution)
     if result:
         return result
 
