@@ -22,6 +22,37 @@
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
             <a class="text-xl font-bold" href="{{ url_for('main.index') }}">Weather App</a>
             <div class="flex gap-4 items-center">
+                <!-- 關於本站 Modal -->
+                <div x-data="{ open: false }">
+                    <button @click="open = true" class="text-white hover:text-blue-200 underline text-sm">
+                        關於本站
+                    </button>
+
+                    <!-- 背景遮罩 -->
+                    <div x-show="open" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-40" @click="open = false"
+                        style="display: none;"></div>
+
+                    <!-- Modal 本體 -->
+                    <div x-show="open" x-transition
+                        class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-xl z-50 w-full max-w-sm"
+                        style="display: none;">
+                        <h4 class="text-xl font-bold mb-2 text-gray-800">Weather App v1.0</h4>
+                        <p class="text-gray-600 mb-4">由 Flask 與 OpenWeatherMap 驅動，使用 Alpine.js 提供互動體驗。</p>
+                        <div class="text-sm text-gray-500 mb-4">
+                            <p>特色功能：</p>
+                            <ul class="list-disc list-inside">
+                                <li>即時天氣查詢</li>
+                                <li>5 天天氣預報</li>
+                                <li>空氣品質監測</li>
+                                <li>位置定位</li>
+                            </ul>
+                        </div>
+                        <button @click="open = false"
+                            class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                            關閉
+                        </button>
+                    </div>
+                </div>
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" @keydown.escape="open = false"
                         class="bg-white text-blue-600 px-3 py-1 rounded shadow flex items-center gap-2">
