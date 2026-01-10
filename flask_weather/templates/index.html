@@ -4,28 +4,29 @@
 
 {% block content %}
 <div class="text-center py-12">
-    <h1 class="text-4xl font-bold mb-4">歡迎來到 Weather App</h1>
-    <p class="text-xl text-gray-600 mb-8">即時掌握全球天氣動態，為您的出行做好準備。</p>
+    <h1 class="text-4xl font-bold mb-4 dark:text-gray-100">歡迎來到 Weather App</h1>
+    <p class="text-xl text-gray-600 dark:text-gray-400 mb-8">即時掌握全球天氣動態，為您的出行做好準備。</p>
 
 
     <!-- 搜尋框入口 -->
-    <div x-data="{ isLoading: false }" class="bg-white shadow-md rounded-lg p-6 mb-8">
+    <div x-data="{ isLoading: false }" class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
         <form action="{{ url_for('weather.search') }}" method="POST" class="flex gap-2" @submit="isLoading = true">
             <!-- CSRF Token (必須！) -->
             {{ form.hidden_tag() }}
 
             <div class="flex-grow">
                 <!-- 渲染輸入欄位，並加入 Tailwind 類別 -->
-                {{ form.city(class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight
-                focus:outline-none focus:shadow-outline", placeholder="輸入城市名稱") }}
+                {{ form.city(class="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full
+                py-3 px-4 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 leading-tight focus:outline-none
+                focus:shadow-outline dark:placeholder-gray-400", placeholder="輸入城市名稱") }}
 
                 <!-- 顯示驗證錯誤 -->
                 {% for error in form.city.errors %}
-                <div class="text-red-500 text-left mt-1 text-sm">{{ error }}</div>
+                <div class="text-red-500 dark:text-red-400 text-left mt-1 text-sm">{{ error }}</div>
                 {% endfor %}
             </div>
             <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline flex items-center"
+                class="bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline flex items-center transition-colors duration-300"
                 :disabled="isLoading" :class="{ 'opacity-50 cursor-not-allowed': isLoading }">
                 <!-- x-show 控制顯示 -->
                 <svg x-show="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
@@ -38,7 +39,7 @@
                 <span x-text="isLoading ? '搜尋中...' : '搜尋'"></span>
             </button>
             <button type="button" id="geo-btn"
-                class="border border-gray-500 text-gray-500 hover:bg-gray-500 hover:text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline cursor-pointer"
+                class="border border-gray-500 dark:border-gray-400 text-gray-500 dark:text-gray-400 hover:bg-gray-500 dark:hover:bg-gray-600 hover:text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline cursor-pointer transition-colors duration-300"
                 title="使用目前位置">
                 <i class="ri-map-pin-fill"></i>
             </button>

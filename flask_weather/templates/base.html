@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-Hant" x-data="{ 
+          darkMode: localStorage.getItem('darkMode') === 'true' || false
+      }" :class="{ 'dark': darkMode }" x-init="$watch('darkMode', val => localStorage.setItem('darkMode', val))">
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +9,14 @@
     <title>{% block title %}Flask 天氣應用{% endblock %}</title>
     <!-- 引入 Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',  // 使用 class 策略
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     <!-- 引入 Alpine.js (用於互動功能) -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <!-- 引入 Remix Icon -->
@@ -16,7 +26,7 @@
     {% endblock %}
 </head>
 
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
     <!-- 導航列 -->
     <nav class="bg-blue-600 text-white shadow-md mb-8">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
@@ -53,6 +63,8 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- 單位切換下拉選單 -->
                 <div x-data="{ open: false }" class="relative">
                     <button @click="open = !open" @keydown.escape="open = false"
                         class="bg-white text-blue-600 px-3 py-1 rounded shadow flex items-center gap-2">
@@ -70,6 +82,15 @@
                             class="block px-4 py-2 hover:bg-gray-100">華氏 (°F)</a>
                     </div>
                 </div>
+
+                <!-- Dark Mode Toggle Button (NEW) -->
+                <button @click="darkMode = !darkMode"
+                    class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="切換深色模式">
+                    <i x-show="!darkMode" class="ri-moon-line text-2xl text-gray-700"></i>
+                    <i x-show="darkMode" class="ri-sun-line text-2xl text-yellow-400"></i>
+                </button>
+
+                <!-- 使用者認證連結 -->
                 {% if current_user.is_authenticated %}
                 <a class="nav-item nav-link" href="{{ url_for('main.dashboard') }}">儀表板</a>
                 <span class="nav-item nav-link">Hi, {{ current_user.username }}</span>
