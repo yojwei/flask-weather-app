@@ -6,7 +6,7 @@
 
 from functools import wraps
 from flask import render_template, redirect, url_for, flash, request
-from flask_weather import db
+from flask_weather import db, limiter
 from flask_weather.auth import auth_bp
 from flask_weather.auth.forms import RegistrationForm, LoginForm
 from flask_weather.models import User
@@ -30,6 +30,7 @@ def redirect_if_authenticated(f):
 
 
 @auth_bp.route("/register", methods=["GET", "POST"])
+@limiter.limit("5 per minute")  # 限制註冊嘗試頻率
 @redirect_if_authenticated
 def register():
     """
@@ -55,6 +56,7 @@ def register():
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")  # 限制登入嘗試頻率
 @redirect_if_authenticated
 def login():
     """

@@ -4,6 +4,9 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_caching import Cache
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from flask_talisman import Talisman
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -11,6 +14,7 @@ login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "請先登入以存取此頁面。"
 cache = Cache()
+limiter = Limiter(key_func=get_remote_address)
 
 
 def create_app():
@@ -45,6 +49,13 @@ def create_app():
     from .utils import get_weather_icon_class
 
     app.jinja_env.filters["weather_icon"] = get_weather_icon_class
+
+    # content_security_policy 設為 None 是因為我們用了 CDN (Tailwind, Alpine)
+    # 生產環境建議嚴格設定 CSP
+    limiter.init_app(app)
+
+    # 安全性設置
+    Talisman(app, content_security_policy=None)
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp

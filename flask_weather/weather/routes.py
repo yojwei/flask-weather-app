@@ -2,7 +2,7 @@ from flask import request, render_template, flash, redirect, url_for
 from . import weather_bp
 from .forms import SearchForm
 from flask_login import login_required, current_user
-from flask_weather import db
+from flask_weather import db, limiter
 from flask_weather.models import SavedCity
 from flask_weather.utils import (
     get_current_weather,
@@ -80,7 +80,7 @@ def _search_city_weather(city):
     """
     weather_data = get_current_weather(city)
     forecast = get_forecast(city)
-    
+
     # 從天氣資料中取得經緯度，並取得空氣污染資訊
     pollution = None
     if weather_data and "coord" in weather_data:
@@ -88,7 +88,9 @@ def _search_city_weather(city):
         lon = weather_data["coord"]["lon"]
         pollution = get_air_pollution(lat, lon)
 
-    result = _render_weather_result(weather_data, forecast, city=city, pollution=pollution)
+    result = _render_weather_result(
+        weather_data, forecast, city=city, pollution=pollution
+    )
     if result:
         return result
 
@@ -97,6 +99,7 @@ def _search_city_weather(city):
 
 
 @weather_bp.route("/search", methods=["GET", "POST"])
+@limiter.limit("20 per minute")  # 限制搜尋頻率
 def search():
     """天氣搜尋"""
     form = SearchForm()
