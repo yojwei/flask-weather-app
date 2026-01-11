@@ -41,8 +41,13 @@ def set_units(unit):
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():
-    # 取得使用者所有收藏城市
-    saved_cities = current_user.saved_cities.all()
+    page = request.args.get("page", 1, type=int)
+    per_page = 6
+
+    pagination = current_user.saved_cities.paginate(
+        page=page, per_page=per_page, error_out=False
+    )
+    saved_cities = pagination.items
 
     weather_reports = []
     for saved in saved_cities:
@@ -52,4 +57,6 @@ def dashboard():
             data = format_weather_data(raw_data)
             weather_reports.append(data)
 
-    return render_template("dashboard.html", reports=weather_reports)
+    return render_template(
+        "dashboard.html", reports=weather_reports, pagination=pagination
+    )
