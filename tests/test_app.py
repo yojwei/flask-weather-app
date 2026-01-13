@@ -9,4 +9,4 @@ def test_weather_api(client):
     """測試天氣 API 端點"""
     response = client.get("/api/weather")
     assert response.status_code == 200
-    assert response.json == {"status": "ok", "message": "天氣 API 端點"}
+    assert response.get_json() == {"status": "ok", "message": "天氣 API 端點"}

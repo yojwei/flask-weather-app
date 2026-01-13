@@ -45,17 +45,25 @@ def create_app():
     app.config["CACHE_DEFAULT_TIMEOUT"] = 300  # 預設快取 5 分鐘
     cache.init_app(app)
 
-    # 自訂 Jinja2 過濾器 icon
+    # 自訂 Jinja2 過濾器 icon 和 datetimeformat
     from .utils import get_weather_icon_class
+    from datetime import datetime
 
     app.jinja_env.filters["weather_icon"] = get_weather_icon_class
+
+    def datetimeformat(timestamp, fmt="%Y-%m-%d %H:%M:%S"):
+        """將 timestamp 轉換為格式化的日期時間字符串"""
+        return datetime.fromtimestamp(timestamp).strftime(fmt)
+
+    app.jinja_env.filters["datetimeformat"] = datetimeformat
 
     # content_security_policy 設為 None 是因為我們用了 CDN (Tailwind, Alpine)
     # 生產環境建議嚴格設定 CSP
     limiter.init_app(app)
 
     # 安全性設置
-    Talisman(app, content_security_policy=None)
+    if app.config.get("TALISMAN_ENABLED", True):
+        Talisman(app, content_security_policy=None)
 
     # 從子模組導入並註冊藍圖
     from .main import main_bp

@@ -41,6 +41,7 @@ class TestingConfig(Config):
         "sqlite:///:memory:"  # 使用記憶體資料庫，速度快且不影響硬碟
     )
     WTF_CSRF_ENABLED = False  # 測試時關閉 CSRF 驗證方便測試
+    TALISMAN_ENABLED = False  # 測試時禁用 Talisman 以避免 HTTPS 重定向
 
 
 class ProductionConfig(Config):

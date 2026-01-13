@@ -1,5 +1,6 @@
 import os
 import pytest
+from flask_login import login_user
 from flask_weather import create_app, db
 from flask_weather.config import TestingConfig
 from flask_weather.models import User
@@ -16,6 +17,13 @@ def app():
 
     with app.app_context():
         db.create_all()
+
+        # 創建測試用戶
+        test_user = User(username="testuser", email="test@example.com")
+        test_user.set_password("password123")
+        db.session.add(test_user)
+        db.session.commit()
+
         yield app
         db.session.remove()
         db.drop_all()
@@ -23,8 +31,12 @@ def app():
 
 @pytest.fixture
 def client(app):
-    """建立測試用的客戶端"""
-    return app.test_client()
+    """建立已認證的測試客戶端"""
+    with app.test_client() as client:
+        with client.session_transaction() as sess:
+            user = User.query.filter_by(username="testuser").first()
+            login_user(user)
+        yield client
 
 
 @pytest.fixture
