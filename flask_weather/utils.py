@@ -290,3 +290,8 @@ def get_air_pollution(lat, lon):
     except requests.exceptions.RequestException as e:
         current_app.logger.error(f"取得空氣污染資料失敗: {e}")
         return None
+
+
+def datetimeformat(timestamp, fmt="%Y-%m-%d %H:%M:%S"):
+    """將 timestamp 轉換為格式化的日期時間字符串"""
+    return datetime.fromtimestamp(timestamp).strftime(fmt)
