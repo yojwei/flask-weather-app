@@ -37,6 +37,10 @@ class TestingConfig(Config):
 
     TESTING = True
     ENV = "testing"
+    SQLALCHEMY_DATABASE_URI = (
+        "sqlite:///:memory:"  # 使用記憶體資料庫，速度快且不影響硬碟
+    )
+    WTF_CSRF_ENABLED = False  # 測試時關閉 CSRF 驗證方便測試
 
 
 class ProductionConfig(Config):
