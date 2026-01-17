@@ -36,6 +36,10 @@ class Config:
             "postgres://", "postgresql://", 1
         )
 
+        # 設定 Limiter 的儲存後端
+    # 如果有設定環境變數就用 Redis，沒有就退回記憶體 (開發用)
+    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+
 
 class DevelopmentConfig(Config):
     """Development configuration"""

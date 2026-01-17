@@ -10,12 +10,15 @@ services:
       - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
       - TALISMAN_ENABLED=False # 在本地 Docker 測試時禁用強制 HTTPS
       - DATABASE_URL=postgresql://user:password@db:5432/weather_db
+      - RATELIMIT_STORAGE_URI=redis://redis:6379   # 指定 Redis 作為限流儲存後端
     volumes:
       - .:/app # 掛載目錄，讓程式碼修改即時生效 (開發用)
     # 修改重點 1: 加入 depends_on 並等待 db 健康
     depends_on:
       db:
         condition: service_healthy
+      redis: # 新增 Redis 依賴
+        condition: service_healthy 
     # 修改重點 2: 使用 sh -c 串聯指令 (先 migration 成功，再啟動 server)
     command: >
       sh -c "flask db upgrade &&
@@ -35,6 +38,16 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d weather_db"]
       interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis: # 新增 Redis 服務
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
       timeout: 5s
       retries: 5
 

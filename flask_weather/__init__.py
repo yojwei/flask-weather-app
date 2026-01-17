@@ -1,5 +1,5 @@
 from flask import Flask
-from flask_weather.config import get_config
+from flask_weather.config import get_config, Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -14,7 +14,11 @@ login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = "請先登入以存取此頁面。"
 cache = Cache()
-limiter = Limiter(key_func=get_remote_address)
+# 初始化 Flask-Limiter
+limiter = Limiter(
+    key_func=get_remote_address,
+    storage_uri=Config.RATELIMIT_STORAGE_URI,  # 使用設定檔中的儲存 URI
+)
 
 
 def create_app():

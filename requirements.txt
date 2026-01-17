@@ -45,6 +45,8 @@ flask-wtf==1.2.2
     # via flask-demo (pyproject.toml)
 greenlet==3.3.0
     # via sqlalchemy
+gunicorn==23.0.0
+    # via flask-demo (pyproject.toml)
 idna==3.11
     # via
     #   email-validator
@@ -69,10 +71,14 @@ markupsafe==3.0.3
 ordered-set==4.1.0
     # via flask-limiter
 packaging==25.0
-    # via limits
+    # via
+    #   gunicorn
+    #   limits
 psycopg2-binary==2.9.11
     # via flask-demo (pyproject.toml)
 python-dotenv==1.2.1
+    # via flask-demo (pyproject.toml)
+redis==7.1.0
     # via flask-demo (pyproject.toml)
 requests==2.32.5
     # via flask-demo (pyproject.toml)
