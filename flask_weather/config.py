@@ -23,10 +23,18 @@ class Config:
     # OpenWeatherMap API settings
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
-    # SQLite settings
+    # ...
+    # Zeabur 等平台會提供 DATABASE_URL 環境變數
+    # 如果沒有，則退回使用 SQLite (本地開發)
     SQLALCHEMY_DATABASE_URI = os.environ.get(
         "DATABASE_URL"
     ) or "sqlite:///" + os.path.join(basedir, "app.db")
+
+    # 修正某些平台的 Postgres URL 開頭 (postgres:// -> postgresql://)
+    if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
+        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace(
+            "postgres://", "postgresql://", 1
+        )
 
 
 class DevelopmentConfig(Config):
