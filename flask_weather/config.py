@@ -16,6 +16,10 @@ class Config:
     # CSRF settings
     SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-scret-key"
 
+    # Security: Flask-Talisman (HTTPS enforcement)
+    # Default to True, set to 'False' in environment to disable (e.g. for local Docker)
+    TALISMAN_ENABLED = os.environ.get("TALISMAN_ENABLED", "True").lower() == "true"
+
     # OpenWeatherMap API settings
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
