@@ -45,8 +45,8 @@ def create_app():
     # 初始化快取
     # 設定快取類型為 SimpleCache (開發用，存在記憶體中)
     # 生產環境建議使用 RedisCache
-    app.config["CACHE_TYPE"] = "SimpleCache"
-    app.config["CACHE_DEFAULT_TIMEOUT"] = 300  # 預設快取 5 分鐘
+    app.config.setdefault("CACHE_TYPE", "SimpleCache")
+    app.config.setdefault("CACHE_DEFAULT_TIMEOUT", 300)  # 預設快取 5 分鐘
     cache.init_app(app)
 
     # 自訂 Jinja2 過濾器 icon 和 datetimeformat

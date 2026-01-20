@@ -46,6 +46,8 @@ class DevelopmentConfig(Config):
 
     DEBUG = True
     ENV = "development"
+    WTF_CSRF_ENABLED = False  # 測試時關閉 CSRF 驗證方便測試
+    TALISMAN_ENABLED = False  # 測試時禁用 Talisman 以避免 HTTPS 重定向
 
 
 class TestingConfig(Config):
@@ -65,6 +67,8 @@ class ProductionConfig(Config):
 
     DEBUG = False
     ENV = "production"
+    CACHE_TYPE = "redis"
+    CACHE_REDIS_URL = os.environ.get("REDIS_CONNECTION_STRING")
 
 
 def get_config():
