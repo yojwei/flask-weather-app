@@ -23,12 +23,14 @@ class Config:
     # OpenWeatherMap API settings
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
-    # ...
-    # Zeabur 等平台會提供 DATABASE_URL 環境變數
-    # 如果沒有，則退回使用 SQLite (本地開發)
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL"
-    ) or "sqlite:///" + os.path.join(basedir, "app.db")
+    # Database configuration
+    # Zeabur 會自動注入 POSTGRES_CONNECTION_STRING 環境變數
+    # 若沒有 PostgreSQL，則退回使用 SQLite (本地開發)
+    SQLALCHEMY_DATABASE_URI = (
+        os.environ.get("POSTGRES_CONNECTION_STRING")
+        or os.environ.get("DATABASE_URL")
+        or "sqlite:///" + os.path.join(basedir, "app.db")
+    )
 
     # 修正某些平台的 Postgres URL 開頭 (postgres:// -> postgresql://)
     if SQLALCHEMY_DATABASE_URI.startswith("postgres://"):
@@ -36,9 +38,14 @@ class Config:
             "postgres://", "postgresql://", 1
         )
 
-        # 設定 Limiter 的儲存後端
-    # 如果有設定環境變數就用 Redis，沒有就退回記憶體 (開發用)
-    RATELIMIT_STORAGE_URI = os.environ.get("RATELIMIT_STORAGE_URI", "memory://")
+    # Rate Limiter 的儲存後端配置
+    # Zeabur 會自動注入 REDIS_CONNECTION_STRING 環境變數
+    # 優先使用 Redis，若沒有則退回記憶體 (開發用)
+    RATELIMIT_STORAGE_URI = (
+        os.environ.get("REDIS_CONNECTION_STRING")
+        or os.environ.get("RATELIMIT_STORAGE_URI")
+        or "memory://"
+    )
 
 
 class DevelopmentConfig(Config):
@@ -68,6 +75,7 @@ class ProductionConfig(Config):
     DEBUG = False
     ENV = "production"
     CACHE_TYPE = "redis"
+    # Zeabur 會自動注入 REDIS_CONNECTION_STRING
     CACHE_REDIS_URL = os.environ.get("REDIS_CONNECTION_STRING")
 
 
