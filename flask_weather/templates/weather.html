@@ -56,9 +56,9 @@
 {% block content %}
 <div class="flex justify-center">
     <div class="w-full">
-        <div class="flex flex-col md:flex-row">
+        <div class="flex flex-col lg:flex-row gap-4">
             <div
-                class="shadow-md rounded-lg overflow-hidden transition-colors duration-300 {{ border_class }} bg-white dark:bg-gray-800 dark:border-gray-700 md:w-2/3 w-full mb-2">
+                class="shadow-md rounded-lg overflow-hidden transition-colors duration-300 {{ border_class }} bg-white dark:bg-gray-800 dark:border-gray-700 lg:w-2/3 w-full mb-4 lg:mb-0">
                 <div
                     class="{{ header_class }} {{ header_text_class }} dark:bg-gray-700 dark:text-gray-100 p-4 text-center flex justify-center items-end space-x-4">
                     <h2 class="text-3xl font-bold mb-0">{{ data.city }}, {{ data.country }}</h2>
@@ -79,8 +79,8 @@
                     {% endif %}
                 </div>
                 <div class="p-6 {{ body_class }} {{ body_text_class }} dark:bg-gray-800 dark:text-gray-100">
-                    <div class="flex-col md:flex md:flex-wrap items-center text-center">
-                        <div class="w-full md:w-1/2 mb-6 md:mb-0">
+                    <div class="flex flex-col sm:flex-row items-center text-center">
+                        <div class="w-full sm:w-1/2 mb-6 sm:mb-0">
                             <!-- 使用 Filter 顯示圖示 -->
                             <div class="text-8xl mb-2">
                                 <i class="{{ data.icon | weather_icon }}"></i>
@@ -91,7 +91,7 @@
                         </div>
 
                         <!-- 桌面版顯示 -->
-                        <div class="hidden md:block w-full md:w-1/2">
+                        <div class="hidden sm:block w-full sm:w-1/2">
                             <ul class="divide-y divide-gray-200 dark:divide-gray-700 text-left">
                                 <li class="py-3 flex justify-between items-center">
                                     <span><i class="ri-drop-fill text-blue-500 mr-2"></i>濕度</span>
@@ -111,7 +111,7 @@
                         </div>
 
                         <!-- 手機版展開/收合功能 -->
-                        <div x-data="{ expanded: false }" class="md:hidden w-full mt-4">
+                        <div x-data="{ expanded: false }" class="sm:hidden w-full mt-4">
                             <button @click="expanded = !expanded"
                                 class="w-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold py-2 px-4 rounded flex justify-between items-center">
                                 <span x-text="expanded ? '隱藏詳細資訊' : '顯示詳細資訊'"></span>
@@ -147,39 +147,42 @@
                 </div>
             </div>
 
-            <div class="flex flex-col w-full md:w-1/3 md:pl-2 md:gap-6">
-                {% if pollution %}
-                {% set aqi_val = pollution.list[0].main.aqi %}
-                {% set aqi_map = {1: '優良', 2: '普通', 3: '對敏感族群不健康', 4: '不健康', 5: '非常不健康'} %}
-                {% set aqi_color = {1: 'text-green-500', 2: 'text-yellow-500', 3: 'text-orange-500', 4: 'text-red-500',
-                5:
-                'text-purple-700'} %}
+            <div class="w-full lg:w-1/3 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                    {% if pollution %}
+                    {% set aqi_val = pollution.list[0].main.aqi %}
+                    {% set aqi_map = {1: '優良', 2: '普通', 3: '對敏感族群不健康', 4: '不健康', 5: '非常不健康'} %}
+                    {% set aqi_color = {1: 'text-green-500', 2: 'text-yellow-500', 3: 'text-orange-500', 4:
+                    'text-red-500',
+                    5:
+                    'text-purple-700'} %}
 
-                <div class="w-full">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center h-full">
-                        <h5 class="text-gray-500 dark:text-gray-400 text-lg mb-4">空氣品質 (AQI)</h5>
-                        <i class="ri-mist-line text-6xl {{ aqi_color[aqi_val] }}"></i>
-                        <h3 class="text-5xl font-bold {{ aqi_color[aqi_val] }} my-4">{{ aqi_val }}</h3>
-                        <p class="text-gray-700 mb-2">{{ aqi_map[aqi_val] }}</p>
+                    <div class="w-full">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center h-full">
+                            <h5 class="text-gray-500 dark:text-gray-400 text-lg mb-4">空氣品質 (AQI)</h5>
+                            <i class="ri-mist-line text-6xl {{ aqi_color[aqi_val] }}"></i>
+                            <h3 class="text-5xl font-bold {{ aqi_color[aqi_val] }} my-4">{{ aqi_val }}</h3>
+                            <p class="text-gray-700 mb-2">{{ aqi_map[aqi_val] }}</p>
 
-                        <!-- 詳細污染物濃度 (選用) -->
-                        <small class="text-gray-400 text-sm">PM2.5: {{ pollution.list[0].components.pm2_5 }}
-                            μg/m³</small>
+                            <!-- 詳細污染物濃度 (選用) -->
+                            <small class="text-gray-400 text-sm">PM2.5: {{ pollution.list[0].components.pm2_5 }}
+                                μg/m³</small>
+                        </div>
                     </div>
-                </div>
-                {% endif %}
+                    {% endif %}
 
-                <div class="w-full">
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center h-full">
-                        <h5 class="text-gray-500 dark:text-gray-400 text-lg mb-4">日出與日落</h5>
-                        <div class="flex justify-around items-center mt-6">
-                            <div class="flex flex-col items-center">
-                                <i class="ri-sun-line text-6xl text-yellow-500 mb-2"></i>
-                                <p class="text-gray-700 font-semibold">{{ data.sunrise }}</p>
-                            </div>
-                            <div class="flex flex-col items-center">
-                                <i class="ri-moon-line text-6xl text-gray-600 mb-2"></i>
-                                <p class="text-gray-700 font-semibold">{{ data.sunset }}</p>
+                    <div class="w-full">
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 text-center h-full">
+                            <h5 class="text-gray-500 dark:text-gray-400 text-lg mb-4">日出與日落</h5>
+                            <div class="flex justify-around items-center mt-6">
+                                <div class="flex flex-col items-center">
+                                    <i class="ri-sun-line text-6xl text-yellow-500 mb-2"></i>
+                                    <p class="text-gray-700 font-semibold">{{ data.sunrise }}</p>
+                                </div>
+                                <div class="flex flex-col items-center">
+                                    <i class="ri-moon-line text-6xl text-gray-600 mb-2"></i>
+                                    <p class="text-gray-700 font-semibold">{{ data.sunset }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -190,7 +193,7 @@
         <div class="mt-10">
             <h3 class="text-2xl font-bold mb-6 dark:text-gray-100">未來 5 天預報</h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
                 {% for date, items in forecast.items() %}
                 <div x-data="{ open: false }" class="relative">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow h-full flex flex-col">
@@ -218,73 +221,79 @@
 
                     <!-- Modal (詳細每 3 小時資訊) -->
                     <div x-show="open" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
-                        <div
-                            class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-                            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="open = false">
-                                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-                            </div>
-
-                            <span class="hidden sm:inline-block sm:align-middle sm:h-screen"
-                                aria-hidden="true">&#8203;</span>
-
+                        <div class="flex items-end sm:items-center justify-center min-h-screen p-0 sm:p-4">
+                            <div class="fixed inset-0 bg-black opacity-50" @click="open = false"></div>
                             <div
-                                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                                    <div class="sm:flex sm:items-start">
-                                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4"
-                                                id="modal-title">
-                                                {{ date }} 詳細預報
-                                            </h3>
-                                            <div class="mt-2">
-                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                    <thead class="bg-gray-50 dark:bg-gray-700">
-                                                        <tr>
-                                                            <th
-                                                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                                時間</th>
-                                                            <th
-                                                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                                天氣</th>
-                                                            <th
-                                                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                                溫度</th>
-                                                            <th
-                                                                class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                                                降雨機率</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody
-                                                        class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                                        {% for item in items %}
-                                                        <tr>
-                                                            <td
-                                                                class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                                {{ item.time }}</td>
-                                                            <td
-                                                                class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                                                                <i class="bi {{ item.icon | weather_icon }}"></i>
-                                                            </td>
-                                                            <td
-                                                                class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                                {{ item.temp }}°</td>
-                                                            <td
-                                                                class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                                                                {{ item['pop'] }}%</td>
-                                                        </tr>
-                                                        {% endfor %}
-                                                    </tbody>
-                                                </table>
+                                class="relative bg-white dark:bg-gray-800 w-full sm:max-w-lg sm:rounded-lg max-h-screen sm:max-h-[90vh] overflow-y-auto transform transition-all">
+                                <div
+                                    class="sticky top-0 bg-white dark:bg-gray-800 border-b dark:border-gray-700 px-4 py-3 flex justify-between items-center">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                                        {{ date }} 詳細預報
+                                    </h3>
+                                    <button @click="open = false"
+                                        class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 p-2 -mr-2"
+                                        aria-label="關閉">
+                                        <i class="ri-close-line text-2xl"></i>
+                                    </button>
+                                </div>
+                                <div class="p-4">
+                                    <div class="sm:hidden space-y-3">
+                                        {% for item in items %}
+                                        <div class="bg-gray-50 dark:bg-gray-700 rounded p-3">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="font-semibold text-gray-700 dark:text-gray-100">{{
+                                                    item.time }}</span>
+                                                <i class="bi {{ item.icon | weather_icon }} text-2xl"></i>
+                                            </div>
+                                            <div
+                                                class="grid grid-cols-2 gap-2 text-sm text-gray-600 dark:text-gray-200">
+                                                <div>溫度: {{ item.temp }}°</div>
+                                                <div>降雨: {{ item['pop'] }}%</div>
                                             </div>
                                         </div>
+                                        {% endfor %}
                                     </div>
-                                </div>
-                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                                    <button type="button"
-                                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-                                        @click="open = false">
-                                        關閉
-                                    </button>
+
+                                    <div class="hidden sm:block overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                                <tr>
+                                                    <th
+                                                        class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        時間</th>
+                                                    <th
+                                                        class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        天氣</th>
+                                                    <th
+                                                        class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        溫度</th>
+                                                    <th
+                                                        class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        降雨機率</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody
+                                                class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                                {% for item in items %}
+                                                <tr>
+                                                    <td
+                                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ item.time }}</td>
+                                                    <td
+                                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                                                        <i class="bi {{ item.icon | weather_icon }}"></i>
+                                                    </td>
+                                                    <td
+                                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ item.temp }}°</td>
+                                                    <td
+                                                        class="px-3 py-2 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                                        {{ item['pop'] }}%</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -337,6 +346,8 @@
         const gridColor = isDarkMode ? '#374151' : '#e5e7eb';
         const tickColor = isDarkMode ? '#9ca3af' : '#6b7280';
 
+        const isMobile = window.innerWidth < 640;
+
         const weatherChart = new Chart(ctx, {
             type: 'line',
             data: {
@@ -362,21 +373,41 @@
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
+                aspectRatio: isMobile ? 1 : 2,
                 interaction: {
                     mode: 'index',
                     intersect: false,
                 },
                 plugins: {
                     legend: {
+                        display: !isMobile,
+                        position: isMobile ? 'bottom' : 'top',
                         labels: {
                             color: textColor
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: {
+                            size: isMobile ? 12 : 14
+                        },
+                        bodyFont: {
+                            size: isMobile ? 11 : 13
                         }
                     }
                 },
                 scales: {
                     x: {
                         ticks: {
-                            color: tickColor
+                            color: tickColor,
+                            font: {
+                                size: isMobile ? 10 : 12
+                            },
+                            maxRotation: isMobile ? 45 : 0,
+                            autoSkip: true,
+                            maxTicksLimit: isMobile ? 8 : 12
                         },
                         grid: {
                             color: gridColor
@@ -392,7 +423,10 @@
                             color: textColor
                         },
                         ticks: {
-                            color: tickColor
+                            color: tickColor,
+                            font: {
+                                size: isMobile ? 10 : 12
+                            }
                         },
                         grid: {
                             color: gridColor
@@ -408,7 +442,10 @@
                             color: textColor
                         },
                         ticks: {
-                            color: tickColor
+                            color: tickColor,
+                            font: {
+                                size: isMobile ? 10 : 12
+                            }
                         },
                         grid: { drawOnChartArea: false }, // 避免格線重疊
                         min: 0,
@@ -439,6 +476,22 @@
         observer.observe(document.documentElement, {
             attributes: true,
             attributeFilter: ['class']
+        });
+
+        window.addEventListener('resize', () => {
+            const isMobileNow = window.innerWidth < 640;
+            weatherChart.options.aspectRatio = isMobileNow ? 1 : 2;
+            weatherChart.options.plugins.legend.display = !isMobileNow;
+            weatherChart.options.plugins.legend.position = isMobileNow ? 'bottom' : 'top';
+            weatherChart.options.plugins.tooltip.titleFont.size = isMobileNow ? 12 : 14;
+            weatherChart.options.plugins.tooltip.bodyFont.size = isMobileNow ? 11 : 13;
+            weatherChart.options.scales.x.ticks.font.size = isMobileNow ? 10 : 12;
+            weatherChart.options.scales.x.ticks.maxRotation = isMobileNow ? 45 : 0;
+            weatherChart.options.scales.x.ticks.maxTicksLimit = isMobileNow ? 8 : 12;
+            weatherChart.options.scales.y.ticks.font.size = isMobileNow ? 10 : 12;
+            weatherChart.options.scales.y1.ticks.font.size = isMobileNow ? 10 : 12;
+            weatherChart.resize();
+            weatherChart.update('none');
         });
     }
 </script>

@@ -11,7 +11,7 @@
             <h2 class="text-3xl font-bold mb-6 dark:text-gray-100">我的收藏城市</h2>
 
             {% if reports %}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
                 {% for report in reports %}
                 {# 根據天氣圖標動態設定配色 #}
                 {% set header_class = 'bg-blue-100' %}
@@ -54,14 +54,15 @@
                 <div
                     class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border {{ border_class }} dark:border-gray-700 transition-all duration-300 hover:shadow-lg">
                     <div class="{{ header_class }} {{ header_text_class }} dark:bg-gray-700 dark:text-gray-100 p-4">
-                        <div class="flex justify-between items-center">
-                            <h5 class="text-xl font-bold">{{ report.city }}</h5>
-                            <i class="{{ report.icon | weather_icon }} text-4xl"></i>
+                        <div class="flex justify-between items-start">
+                            <h5 class="text-lg sm:text-xl font-bold">{{ report.city }}</h5>
+                            <i class="{{ report.icon | weather_icon }} text-3xl sm:text-4xl"></i>
                         </div>
                     </div>
-                    <div class="p-6 {{ body_class }} dark:bg-gray-800">
-                        <h2 class="text-5xl font-bold mb-2 dark:text-gray-100">{{ report.temp }}°</h2>
-                        <p class="text-gray-600 dark:text-gray-400 capitalize mb-4">{{ report.description }}</p>
+                    <div class="p-4 sm:p-6 {{ body_class }} dark:bg-gray-800">
+                        <h2 class="text-4xl sm:text-5xl font-bold mb-2 dark:text-gray-100">{{ report.temp }}°</h2>
+                        <p class="text-sm sm:text-base text-gray-600 dark:text-gray-400 capitalize mb-4">{{
+                            report.description }}</p>
 
                         <div class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                             <div class="flex justify-between items-center">
@@ -79,13 +80,13 @@
                         </div>
                     </div>
                     <div
-                        class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
+                        class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600 flex flex-col sm:flex-row gap-2 sm:gap-0 sm:justify-between items-center">
                         <a href="{{ url_for('weather.search', city=report.city) }}"
-                            class="inline-block px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition">
+                            class="inline-block w-full sm:w-auto text-center px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white text-sm font-semibold rounded hover:bg-blue-600 dark:hover:bg-blue-700 transition">
                             詳細資訊
                         </a>
                         <a href="{{ url_for('weather.unsave_city', city=report.city) }}"
-                            class="inline-block px-4 py-2 border border-red-500 dark:border-red-400 text-red-500 dark:text-red-400 text-sm font-semibold rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition">
+                            class="inline-block w-full sm:w-auto text-center px-4 py-2 border border-red-500 dark:border-red-400 text-red-500 dark:text-red-400 text-sm font-semibold rounded hover:bg-red-50 dark:hover:bg-red-900/20 transition">
                             <i class="ri-heart-fill mr-1"></i>移除
                         </a>
                     </div>
@@ -121,14 +122,18 @@
             </nav>
             {% else %}
             <div
-                class="bg-blue-50 dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg p-6 text-center">
-                <div class="text-blue-600 dark:text-blue-400 mb-2">
-                    <i class="ri-information-line text-4xl"></i>
+                class="bg-blue-50 dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg p-6 sm:p-8 text-center max-w-md mx-auto">
+                <div class="text-blue-600 dark:text-blue-400 mb-4">
+                    <i class="ri-information-line text-5xl sm:text-6xl"></i>
                 </div>
-                <p class="text-blue-800 dark:text-blue-300">
-                    您目前沒有收藏任何城市。快去 <a href="{{ url_for('main.index') }}"
-                        class="text-blue-600 dark:text-blue-400 font-semibold hover:underline">搜尋</a> 並加入收藏吧！
+                <h3 class="text-lg sm:text-xl font-semibold mb-2 text-blue-900 dark:text-blue-100">尚未收藏城市</h3>
+                <p class="text-sm sm:text-base text-blue-800 dark:text-blue-300 mb-4">
+                    探索全球天氣，將喜愛的城市加入收藏
                 </p>
+                <a href="{{ url_for('main.index') }}"
+                    class="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    開始搜尋
+                </a>
             </div>
             {% endif %}
         </div>

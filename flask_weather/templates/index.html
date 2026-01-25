@@ -9,12 +9,13 @@
 
 
     <!-- 搜尋框入口 -->
-    <div x-data="{ isLoading: false }" class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-6 mb-8">
-        <form action="{{ url_for('weather.search') }}" method="POST" class="flex gap-2" @submit="isLoading = true">
+    <div x-data="{ isLoading: false }" class="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 sm:p-6 mb-8">
+        <form action="{{ url_for('weather.search') }}" method="POST" class="space-y-3 sm:space-y-0 sm:flex sm:gap-2"
+            @submit="isLoading = true">
             <!-- CSRF Token (必須！) -->
             {{ form.hidden_tag() }}
 
-            <div class="flex-grow">
+            <div class="w-full sm:flex-grow">
                 <!-- 渲染輸入欄位，並加入 Tailwind 類別 -->
                 {{ form.city(class="shadow appearance-none border border-gray-300 dark:border-gray-600 rounded w-full
                 py-3 px-4 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 leading-tight focus:outline-none
@@ -25,24 +26,27 @@
                 <div class="text-red-500 dark:text-red-400 text-left mt-1 text-sm">{{ error }}</div>
                 {% endfor %}
             </div>
-            <button type="submit"
-                class="bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline flex items-center transition-colors duration-300"
-                :disabled="isLoading" :class="{ 'opacity-50 cursor-not-allowed': isLoading }">
-                <!-- x-show 控制顯示 -->
-                <svg x-show="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
-                <span x-text="isLoading ? '搜尋中...' : '搜尋'"></span>
-            </button>
-            <button type="button" id="geo-btn"
-                class="border border-gray-500 dark:border-gray-400 text-gray-500 dark:text-gray-400 hover:bg-gray-500 dark:hover:bg-gray-600 hover:text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline cursor-pointer transition-colors duration-300"
-                title="使用目前位置">
-                <i class="ri-map-pin-fill"></i>
-            </button>
+            <div class="flex gap-2">
+                <button type="submit"
+                    class="flex-1 sm:flex-none bg-blue-500 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white font-bold py-3 px-4 sm:px-6 rounded focus:outline-none focus:shadow-outline flex items-center justify-center transition-colors duration-300"
+                    :disabled="isLoading" :class="{ 'opacity-50 cursor-not-allowed': isLoading }">
+                    <svg x-show="isLoading" class="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    <span class="hidden sm:inline" x-text="isLoading ? '搜尋中...' : '搜尋'"></span>
+                    <i class="ri-search-line sm:hidden"></i>
+                </button>
+                <button type="button" id="geo-btn"
+                    class="border border-gray-500 dark:border-gray-400 text-gray-500 dark:text-gray-400 hover:bg-gray-500 dark:hover:bg-gray-600 hover:text-white font-bold py-3 px-4 sm:px-6 rounded focus:outline-none focus:shadow-outline cursor-pointer transition-colors duration-300"
+                    title="使用目前位置">
+                    <i class="ri-map-pin-fill"></i>
+                </button>
+            </div>
         </form>
     </div>
 </div>

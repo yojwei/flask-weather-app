@@ -19,3 +19,132 @@ body {
 .fade-in {
     animation: fadeIn 0.5s ease-out forwards;
 }
+
+/* 容器最大寬度 */
+.container {
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+    .container {
+        max-width: 640px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px;
+    }
+}
+
+@media (min-width: 1280px) {
+    .container {
+        max-width: 1200px;
+    }
+}
+
+/* 觸控友善的按鈕最小尺寸 */
+button,
+.btn,
+a.btn {
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* 平滑滾動 */
+html {
+    scroll-behavior: smooth;
+}
+
+/* 防止小螢幕橫向滾動 */
+body {
+    overflow-x: hidden;
+}
+
+/* 響應式文字大小 */
+.text-responsive-sm {
+    font-size: 0.875rem;
+}
+
+@media (min-width: 768px) {
+    .text-responsive-sm {
+        font-size: 1rem;
+    }
+}
+
+.text-responsive-base {
+    font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+    .text-responsive-base {
+        font-size: 1.125rem;
+    }
+}
+
+/* 卡片陰影在移動端減輕 */
+.card-shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .card-shadow {
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+/* Alpine.js 過渡動畫優化 */
+[x-cloak] {
+    display: none !important;
+}
+
+/* 移動端導航動畫 */
+.mobile-menu-enter {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 確保圖片響應式 */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 表格在小螢幕可滾動 */
+.table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 移動端輸入框優化 */
+@media (max-width: 640px) {
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select,
+    textarea {
+        font-size: 16px;
+    }
+}
