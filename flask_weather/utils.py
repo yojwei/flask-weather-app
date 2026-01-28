@@ -6,6 +6,35 @@ from datetime import datetime
 from flask_weather import cache
 from collections import defaultdict
 
+# CWA 天氣 API 設定
+CWA_API_BASE_URL = "https://opendata.cwa.gov.tw/api/v1/rest/datastore/F-C0032-001"
+
+# 全台 22 縣市對照表（英文代碼 -> 中文名稱）
+CWA_CITY_MAP = {
+    "taipei": "臺北市",
+    "newtaipei": "新北市",
+    "keelung": "基隆市",
+    "taoyuan": "桃園市",
+    "hsinchu": "新竹市",
+    "hsinchucounty": "新竹縣",
+    "miaoli": "苗栗縣",
+    "taichung": "臺中市",
+    "changhua": "彰化縣",
+    "nantou": "南投縣",
+    "yunlin": "雲林縣",
+    "chiayi": "嘉義市",
+    "chiayicounty": "嘉義縣",
+    "tainan": "臺南市",
+    "kaohsiung": "高雄市",
+    "pingtung": "屏東縣",
+    "yilan": "宜蘭縣",
+    "hualien": "花蓮縣",
+    "taitung": "臺東縣",
+    "penghu": "澎湖縣",
+    "kinmen": "金門縣",
+    "lienchiang": "連江縣",
+}
+
 
 def _fetch_weather_data(params, timeout=5):
     """
@@ -35,6 +64,39 @@ def _fetch_weather_data(params, timeout=5):
         return None
     except ValueError as e:
         current_app.logger.error(f"API 回傳資料格式錯誤: {e}")
+        return None
+
+
+def _fetch_cwa_data(city_name, timeout=8):
+    """
+    取得 CWA 36 小時天氣預報原始資料
+    """
+    api_key = current_app.config.get("CWA_API_KEY")
+    if not api_key:
+        current_app.logger.error("CWA API Key 未設定")
+        return None
+
+    params = {
+        "Authorization": api_key,
+        "locationName": city_name,
+    }
+
+    try:
+        current_app.logger.debug(f"呼叫 CWA API：{params}")
+        response = requests.get(CWA_API_BASE_URL, params=params, timeout=timeout)
+        response.raise_for_status()
+        return response.json()
+    except requests.exceptions.Timeout:
+        current_app.logger.warning("CWA API 請求逾時")
+        return None
+    except requests.exceptions.HTTPError as e:
+        current_app.logger.error(f"CWA API HTTP 錯誤: {e}")
+        return None
+    except requests.exceptions.RequestException as e:
+        current_app.logger.error(f"CWA API 連線錯誤: {e}")
+        return None
+    except ValueError as e:
+        current_app.logger.error(f"CWA API 回傳資料格式錯誤: {e}")
         return None
 
 
@@ -136,6 +198,85 @@ def clear_weather_cache():
     except Exception as e:
         current_app.logger.error(f"清除天氣快取失敗: {e}")
         return False
+
+
+def get_cwa_cities():
+    """取得 CWA 支援縣市列表"""
+    return [{"code": code, "name": name} for code, name in CWA_CITY_MAP.items()]
+
+
+def _format_cwa_weather_data(raw_data, city_code):
+    if not raw_data:
+        return None
+
+    records = raw_data.get("records") or {}
+    locations = records.get("location") or []
+    if not locations:
+        return None
+
+    location_data = locations[0]
+    weather_elements = location_data.get("weatherElement") or []
+    if not weather_elements or not weather_elements[0].get("time"):
+        return None
+
+    time_count = len(weather_elements[0].get("time", []))
+    weather_data = {
+        "city": location_data.get("locationName"),
+        "cityCode": city_code,
+        "updateTime": records.get("datasetDescription") or "",
+        "forecasts": [],
+    }
+
+    for i in range(time_count):
+        time_item = weather_elements[0]["time"][i]
+        forecast = {
+            "startTime": time_item.get("startTime"),
+            "endTime": time_item.get("endTime"),
+            "weather": "",
+            "rain": "",
+            "minTemp": "",
+            "maxTemp": "",
+            "comfort": "",
+        }
+
+        for element in weather_elements:
+            element_name = element.get("elementName")
+            element_time = element.get("time", [])
+            if i >= len(element_time):
+                continue
+
+            parameter = element_time[i].get("parameter", {})
+            value = parameter.get("parameterName", "")
+
+            if element_name == "Wx":
+                forecast["weather"] = value
+            elif element_name == "PoP":
+                forecast["rain"] = f"{value}%" if value else ""
+            elif element_name == "MinT":
+                forecast["minTemp"] = f"{value}°C" if value else ""
+            elif element_name == "MaxT":
+                forecast["maxTemp"] = f"{value}°C" if value else ""
+            elif element_name == "CI":
+                forecast["comfort"] = value
+
+        weather_data["forecasts"].append(forecast)
+
+    return weather_data
+
+
+@cache.memoize(timeout=600)
+def get_cwa_weather(city_code):
+    """取得指定縣市 CWA 天氣預報"""
+    if not city_code:
+        return None
+
+    city_key = city_code.lower()
+    city_name = CWA_CITY_MAP.get(city_key)
+    if not city_name:
+        return None
+
+    raw_data = _fetch_cwa_data(city_name)
+    return _format_cwa_weather_data(raw_data, city_key)
 
 
 @cache.memoize(timeout=600)  # 快取 10 分鐘
