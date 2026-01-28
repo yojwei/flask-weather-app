@@ -83,7 +83,7 @@ def _fetch_cwa_data(city_name, timeout=8):
 
     try:
         current_app.logger.debug(f"呼叫 CWA API：{params}")
-        response = requests.get(CWA_API_BASE_URL, params=params, timeout=timeout)
+        response = requests.get(CWA_API_BASE_URL, params=params, timeout=timeout, verify=False)
         response.raise_for_status()
         return response.json()
     except requests.exceptions.Timeout:
