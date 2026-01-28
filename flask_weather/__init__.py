@@ -66,10 +66,12 @@ def create_app():
     # 從子模組導入並註冊藍圖
     from .main import main_bp
     from .weather import weather_bp
+    from .taiwan_weather import taiwan_weather_bp
     from .auth import auth_bp
 
     app.register_blueprint(main_bp)
     app.register_blueprint(weather_bp, url_prefix="/weather")
+    app.register_blueprint(taiwan_weather_bp)
     app.register_blueprint(auth_bp, url_prefix="/auth")
 
     # 錯誤處理

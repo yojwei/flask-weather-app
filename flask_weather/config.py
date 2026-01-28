@@ -23,6 +23,9 @@ class Config:
     # OpenWeatherMap API settings
     OPENWEATHER_API_KEY = os.environ.get("OPENWEATHER_API_KEY")
 
+    # CWA (Central Weather Administration) API settings
+    CWA_API_KEY = os.environ.get("CWA_API_KEY")
+
     # Database configuration
     # Zeabur 會自動注入 POSTGRES_CONNECTION_STRING 環境變數
     # 若沒有 PostgreSQL，則退回使用 SQLite (本地開發)
