@@ -7,7 +7,9 @@ blinker==1.9.0
 cachelib==0.13.0
     # via flask-caching
 certifi==2026.1.4
-    # via requests
+    # via
+    #   flask-demo (pyproject.toml)
+    #   requests
 charset-normalizer==3.4.4
     # via requests
 click==8.3.1
